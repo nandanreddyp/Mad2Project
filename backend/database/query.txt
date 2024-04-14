@@ -1,0 +1,30 @@
+all_users = User.query.all()
+
+specific_user = db.session.get(User,id)
+
+john_users = User.query.filter_by(username='John').all()
+
+similar_names = User.query.filter(User.username.like('%John%')).all()
+
+from sqlalchemy import or_
+john_or_mary = User.query.filter(or_(User.username == 'John', User.username == 'Mary')).all()
+
+sorted_users = User.query.order_by(User.username).all()
+
+# adding data
+new_user = User(username='Alice', email='alice@example.com')
+db.session.add(new_user)
+db.session.commit()
+
+# inserting or update
+    user = User(username='David', email='david@example.com')
+    db.session.merge(user)
+    db.session.commit()
+    or..
+    User.query.filter_by(username='Alice').update({'email': 'newemail@example.com'})
+    db.session.commit()
+
+# paginate results
+books = BookSource.query.paginate(page=1,per_page=3)
+books.items gives all paginated data
+books.page gives page number

@@ -1,0 +1,5 @@
+> apis and cheking
+> jwt token cheking
+> event listeners for ratings update
+> find a best way to handle user request and admin approval data and flow of tasks
+> live refresh? in vue some value cchanges instantly reload something like that

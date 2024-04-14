@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Text Extraction</title>
+</head>
+<body>
+    <input type="text" id="pdfUrl" placeholder="Enter PDF URL">
+    <button id="extractButton">Extract Text</button>
+    <pre id="output"></pre>
+
+    <script src="https://cdn.jsdelivr.net/npm/pdf-parse@1.1.1/lib/pdf-parse.min.js"></script>
+    <script>
+        document.getElementById('extractButton').addEventListener('click', function() {
+            const pdfUrl = document.getElementById('pdfUrl').value.trim();
+            if (!pdfUrl) return;
+
+            // Fetch the PDF file
+            fetch(pdfUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch PDF');
+                    }
+                    return response.arrayBuffer();
+                })
+                .then(pdfData => {
+                    // Parse the PDF content
+                    pdf(pdfData).then(data => {
+                        // Extracted text is available in data.text
+                        document.getElementById('output').textContent = data.text;
+                    }).catch(err => {
+                        console.error(err);
+                    });
+                })
+                .catch(err => {
+                    console.error(err);
+                });
+        });
+    </script>
+</body>
+</html>
