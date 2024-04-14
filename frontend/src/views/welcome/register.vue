@@ -45,7 +45,7 @@ import axiosClient from '@/services/axios';
 export default {
     data() {
         return {
-            FormData: {email: this.$store.state.user.email, f_name:"NandanReddy", l_name:"Parnapalli", password:"Passkey123", password1:"Passkey123", dob:"2004-04-09", 'image-id':'' },
+            FormData: {email: this.$store.state.user.email, f_name:"", l_name:"", password:"", password1:"", dob:"", 'image-id':"" },
             uploadImageUrl: '',
             response: ''
         }

@@ -13,7 +13,7 @@ import appHeader from '@/components/layout/header.vue'
 import appSidebar from '@/components/layout/sidebar.vue'
 export default {
     components: {
-        appHeader, appSidebar
+        appHeader, appSidebar,
     }
 }
 </script>

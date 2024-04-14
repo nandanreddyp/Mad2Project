@@ -21,7 +21,7 @@ export default {
         return {
             FormData: {
                 // email: this.$store.state.user.email , password: 'passkey123'
-                email: 'user1@example.com', password: "12345678"
+                email: "", password: ""
             },
             response: ''
         }

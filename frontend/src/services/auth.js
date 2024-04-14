@@ -40,7 +40,6 @@ export function logIn(form) {
     axiosClient.post('/api/auth/login',form)
     .then(resp => {
         if (resp.data.access_token) {
-          console.log(resp.data.user)
           this.$store.commit('setUser',resp.data.user)
           this.$store.commit('setAuthentication',true)
           localStorage.setItem('access_token', resp.data.access_token);
@@ -70,7 +69,6 @@ export function logOut() {
         this.$store.commit('removeUser')
         localStorage.removeItem('access_token');
         this.$router.push('/in')
-        console.log('Logged out')
       }
     }).catch(error => {
       try {
@@ -78,7 +76,7 @@ export function logOut() {
         localStorage.removeItem('access_token');
         this.$router.push('/in')
       } finally {
-        console.log('Removed user with not 200')
+        ;
       }
     })
 }

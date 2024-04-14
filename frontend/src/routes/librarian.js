@@ -44,6 +44,11 @@ export default [
             name: 'librarian-authors',
             component: () => import("@/views/librarian/authors/authors.vue")
           },
+          {
+            path: '/authors/:id',
+            name: 'librarian-author',
+            component: () => import("@/views/librarian/authors/author.vue")
+          },
         ]
     }
 ]

@@ -1,5 +1,5 @@
 <template>
-    <div id="guide-content-mini">
+    <div id="guide-content-mini" :class="{'librarian' : (user.role === 'librarian')}">
         <ul>
             <li>
                 <router-link :to="user.role==='user' ? {name:'user-home'} : {name:'librarian-home'}">
@@ -17,6 +17,12 @@
                 <router-link :to="user.role==='user' ? {name:'user-books',query:{sort:'newest'}} : {name:'librarian-books'} ">
                     <svg class="icon" enable-background="new 0 0 64 64" height="64px" id="Layer_1" version="1.1" viewBox="0 0 64 64" width="64px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M62.869,16.842h-0.057c-1.096,0.007-1.266-0.945-1.285-1.387V8.542c0-0.738-0.598-1.336-1.334-1.336H40.428  c-4.959,0-6.809,1.838-7.268,2.415l-0.126,0.175l-0.001,0.003l-0.391,0.536c-0.001,0-0.001,0-0.001,0  c-0.525,0.721-0.982,0.414-1.202,0.178l-0.748-0.933l-0.37-0.446c-0.622-0.653-2.243-1.928-5.456-1.928H3.808  c-0.738,0-1.336,0.598-1.336,1.336v6.825c0,1.195-0.649,1.435-1.047,1.475H1.129c-0.324,0.02-1.078,0.208-1.078,1.595v32.529  c0,0.798,0.647,1.444,1.445,1.444h19.218c6.131,0,8.803,2.312,9.604,3.199l0.457,0.566h0.001c0,0,1.226,1.387,2.518,0l0,0  l0.268-0.314v0.001l0.004-0.003l0.342-0.4c0.01-0.012,0.092-0.104,0.211-0.226c1.023-0.995,3.58-2.823,8.58-2.823h19.805  c0.799,0,1.445-0.646,1.445-1.444V18.122C63.949,16.946,63.098,16.848,62.869,16.842z M58.551,45.862  c0,0.641-0.535,1.158-1.201,1.158H41.055c-5.799,0-7.904,2.62-7.904,2.62l-0.267,0.358l-0.125,0.173c-0.001,0-0.001,0-0.001,0  c-0.553,0.751-1.366,0.006-1.37,0.002l-0.375-0.469c-0.278-0.334-2.408-2.685-7.563-2.685h-16.8c-0.663,0-1.199-0.518-1.199-1.158  V11.199c0-0.64,0.536-1.158,1.199-1.158h13.043c9.702,0,10.621,5.511,10.684,7.112v24.106c0,1.752,0.835,2.081,1.306,2.129h0.701  c0.48-0.048,1.243-0.333,1.243-1.7V16.842h-0.008c0.072-2.005,0.854-6.802,6.689-6.802H57.35c0.666,0,1.201,0.518,1.201,1.158  V45.862z" fill="#241F20"/></svg>
                     <span>Books</span>
+                </router-link>
+            </li>
+            <li v-if="user.role==='librarian'">
+                <router-link :to="{name:'librarian-authors'}">
+                    <svg class="icon" style="opacity: 0.7;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#000000" height="64px" width="64px" version="1.1" id="Capa_1" viewBox="0 0 964.07 964.07" xml:space="preserve"><g><path d="M850.662,877.56c-0.77,0.137-4.372,0.782-10.226,1.831c-230.868,41.379-273.337,48.484-278.103,49.037   c-11.37,1.319-19.864,0.651-25.976-2.042c-3.818-1.682-5.886-3.724-6.438-4.623c0.268-1.597,2.299-5.405,3.539-7.73   c1.207-2.263,2.574-4.826,3.772-7.558c7.945-18.13,2.386-36.521-14.51-47.999c-12.599-8.557-29.304-12.03-49.666-10.325   c-12.155,1.019-225.218,36.738-342.253,56.437l-57.445,45.175c133.968-22.612,389.193-65.433,402.622-66.735   c11.996-1.007,21.355,0.517,27.074,4.4c3.321,2.257,2.994,3.003,2.12,4.997c-0.656,1.497-1.599,3.264-2.596,5.135   c-3.835,7.189-9.087,17.034-7.348,29.229c1.907,13.374,11.753,24.901,27.014,31.626c8.58,3.78,18.427,5.654,29.846,5.654   c4.508,0,9.261-0.292,14.276-0.874c9.183-1.065,103.471-17.67,280.244-49.354c5.821-1.043,9.403-1.686,10.169-1.821   c9.516-1.688,15.861-10.772,14.172-20.289S860.183,875.87,850.662,877.56z"/><path d="M231.14,707.501L82.479,863.005c-16.373,17.127-27.906,38.294-33.419,61.338l211.087-166.001   c66.081,29.303,118.866,38.637,159.32,38.637c71.073,0,104.065-28.826,104.065-28.826c-66.164-34.43-75.592-98.686-75.592-98.686   c50.675,21.424,156.235,46.678,156.235,46.678c140.186-93.563,213.45-296.138,213.45-296.138   c-14.515,3.99-28.395,5.652-41.475,5.652c-65.795,0-111-42.13-111-42.13l183.144-39.885C909.186,218.71,915.01,0,915.01,0   L358.176,495.258C295.116,551.344,250.776,625.424,231.14,707.501z"/></g></svg>
+                    <span>Authors</span>
                 </router-link>
             </li>
             <li>
@@ -42,35 +48,86 @@ export default {
 </script>
 
 <style>
+.librarian {
+    background-color: grey !important;
+}
+
 #guide-content-mini {
-    height: 100%; width: 62px;
-    background-color: #9b864e;
-    overflow-y: auto; overflow-x: hidden;
+  height: 100%;
+  width: 62px;
+  background-color: #9b864e;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
+
 #guide-content-mini ul {
-    list-style: none; padding: 3px;
-    height: 100%;
-    display: flex; flex-direction: column; justify-content: space-evenly;
+  list-style: none;
+  padding: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Align items to the center */
+  /* justify-content: flex-start; */
+  justify-content: space-evenly;
 }
+
 #guide-content-mini ul li {
-    font-size: 15px; text-align: center;
+  font-size: 14px; /* Adjusted font size */
+  text-align: center;
+  margin-top: 10px; /* Added spacing between list items */
 }
+
 #guide-content-mini ul li a {
-    text-decoration: none;
+  text-decoration: none;
+  color: white; /* Set link color */
 }
+
 .icon {
-    width: 40px;
+  /* width: 40px; */
+  width: 30px; height: 30px;
 }
+
 li span {
-    color: white; font-size: 13px;
+  color: white;
+  font-size: 13px;
 }
+
+/* active page indicator */
+@keyframes zoomIn {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.2);
+  }
+}
+@keyframes zoomOut {
+  0% {
+    transform: scale(1.2); /* Start from 120% */
+  }
+  100% {
+    transform: scale(1); /* Zoom out to 100% */
+  }
+}
+
 li:has( > a.router-link-exact-active) {
     background-color: rgb(244, 178, 112);
     width: 100%;
-    margin: 10px 5px; border-radius: 10px;
-    padding-bottom: 5px;
+    border-radius: 6px;
 }
 li:has( > a.router-link-exact-active) span {
     color: black; 
+}
+
+li:has( > a.router-link-exact-active) .icon {
+    animation: zoomIn 0.5s ease-in-out forwards;
+}
+li:not(:has( > a.router-link-exact-active)) .icon {
+  animation: zoomOut 0.5s ease-in-out forwards;
+}
+
+/* if librarian then white active page indicator */
+.librarian li:has( > a.router-link-exact-active) {
+    background-color: white;
 }
 </style>

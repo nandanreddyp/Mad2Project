@@ -1,0 +1,77 @@
+.librarian {
+    background-color: grey;
+}
+
+header {
+    display: flex; align-items: center; justify-content: space-between;
+    height: 50px; padding: 10px;
+    background-color: #9b864e;
+    overflow: hidden;
+}
+header a {
+    -webkit-user-drag: none;
+}
+nav {
+    width: 50%;
+    display: flex; justify-content: space-evenly;
+}
+nav a {
+    display: inline-block; flex: 0.1;
+    color: white; background-color: red;
+    padding: 5px; border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+    text-align: center;
+}
+nav a:active {
+    background-color: rgb(70, 0, 0);
+    transform: translate(1px)
+}
+
+#menu-logo {
+    cursor: ew-resize;
+}
+/* start */
+#header-start {
+    display: flex; align-items: center; gap: 10px;
+}
+#logo {
+    width: 180px; padding-left: 21px;
+    user-select: none; -webkit-user-drag: none;
+}
+
+/* center */
+.main-header-search {
+    display: flex; align-items: center; gap: 10px;
+    padding: 0 10px; height: 30px;
+    border: 1px solid black; border-radius: 50px;
+    background-color: white;
+}
+.main-header-search > input {
+    padding: 6px;
+    border: none; background: none;
+}
+.main-header-search > input:focus {
+    outline: none;
+}
+.main-header-search > button {
+    border: none; background: none;
+}
+.main-header-search > button:hover {
+    cursor: pointer;
+}
+
+/* end */
+#header-end {
+    display: flex; align-items: center; gap: 10px;
+}
+#header-end > #user-logo {
+    width: 40px; height: 40px;
+    object-fit: cover;
+    border-radius: 50px;
+    -webkit-user-drag: none;
+}
+#header-end > #user-logo:hover {
+    border: 3px solid black;
+    cursor: pointer;
+}
