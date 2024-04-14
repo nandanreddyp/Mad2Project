@@ -1,38 +1,16 @@
 <template>
     <div class="popup-bg">
         <div class="popup">
-            <div class="popup-header">Create Book</div>
+            <div class="popup-header">Create Author</div>
             <div class="body">
-                <form ref="myForm" id="book-form">
 
-                    <label for="pdf-file">PDF File</label>
-                    <input type="file" id="pdf-file" name="pdf_file" accept="application/pdf" required><br><br>
-
-                    <label for="img-file">Book Cover Image</label>
-                    <input type="file" id="img-file" name="img_file" accept="image/*" required><br><br>
-
-                    <label for="name">Book Name</label>
-                    <input type="text" id="name" name="name" required><br><br>
-                    
-                    <div class="book-description">
-                        <label for="description">Description</label>
-                        <textarea id="description" name="description" placeholder="Description about this books"></textarea>
-                    </div>
-
-                    <label for="page-count">Page Count</label>
-                    <input type="number" id="page-count" name="page_count" min="1" required><br><br>
-                    
-                    <label for="publication-date">Publication Date</label>
-                    <input type="date" id="publication-date" name="publication_date"><br><br>
-                    
-                    <label for="isbn">ISBN</label>
-                    <input type="text" id="isbn" name="isbn"><br><br>
-                    
-                </form>
+                <div class="author-description">
+                    <textarea placeholder="Share details of your own experience about this authors"></textarea>
+                </div>
             </div>
             <div class="popup-options">
-                <button class="ok" @click="submitForm" >Submit</button>
-                <button class="cancel" @click="toggleAddBook">Cancel</button>
+                <button class="ok">Submit</button>
+                <button class="cancel" @click="toggleAddAuthor">Cancel</button>
             </div>
         </div>
     </div>
@@ -49,17 +27,15 @@ export default {
         }
     }},
     methods:{
-        submitForm(){
-            if (this.$refs.myForm.reportValidity()) {
-                alert('submiting book')
-                // axiosClient.post(`/api/reviews`)
-                // .then(resp=>{
-                // })
-            }
+        uploadReview(){
+            axiosClient.post(`/api/reviews`)
+            .then(resp=>{
+
+            })
         }
     },
     props: {
-        toggleAddBook: Function, 
+        toggleAddAuthor: Function, 
     }
 }
 </script>
@@ -128,15 +104,15 @@ div.body {
 .review-stars input {
     display: none;
 }
-.book-description {
+.author-description {
     width: 100%;
 }
-.book-description textarea {
-    width: 100%; height: 150px;
+.author-description textarea {
+    width: 100%; height: 300px;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    /* margin: 16px 0px; */
+    margin: 16px 0px;
     line-height: 1.5rem;
     resize: none;
 
@@ -145,35 +121,6 @@ div.body {
     letter-spacing: .00625em;
     font-weight: 400;
 }
-
-/* form css */
-#book-form {
-    width: 100%;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-label {
-    display: block;
-    margin-bottom: 5px;
-}
-
-input[type="text"],
-input[type="number"],
-input[type="file"],
-input[type="date"],
-textarea {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-}
-
-
-
 
 
 /* footer */

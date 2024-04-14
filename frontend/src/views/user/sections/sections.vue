@@ -1,4 +1,8 @@
 <template>
+    <div class="upload-bar" v-if="user.role==='librarian'">
+        <button class="upload-button" @click="toggleAddSection">Create New Section</button>
+        <addSection v-if="add_section" :toggleAddSection="toggleAddSection"/>
+    </div>
     <form @submit.prevent="runSearch" class="collection-header">
         <div class="search">
             <input v-model="query" name="query" type="search" placeholder="Search in sections">
@@ -24,6 +28,7 @@
 import axiosClient from '@/services/axios';
 
 import sectionsList from '@/components/sections/sections.vue'
+import addSection from '@/components/sections/addSection.vue';
 
 export default {
     data(){return{
@@ -34,14 +39,17 @@ export default {
         query: this.$route.query.query,
         sort: 'newest',
         // title
-        title: 'Sections to explore books'
+        title: 'Sections to explore books',
+        // librarian requirements
+        user: this.$store.state.user,
+        add_section: false,
     }},
     components: {
-        sectionsList,
+        sectionsList, addSection,
     },
     methods: {
         runSearch() {
-            this.$router.push({path:'/sections',query:{query:this.query,sort:this.sort}})
+            this.$router.push({name: this.user.role === 'librarian' ? 'librarian-sections' : 'user-sections', query:{query:this.query,sort:this.sort}})
             this.sections=[]
             if (this.query) {
                 if (this.sort === 'newest') {
@@ -77,6 +85,9 @@ export default {
                 })
                 this.loading = false;
             }, 2000)
+        },
+        toggleAddSection() {
+            this.add_section = !this.add_section
         }
     },
     mounted(){
@@ -84,7 +95,7 @@ export default {
     },
     watch: {
         $route(to, from) {
-            if (to.fullPath === '/sections?sort=newest') {
+            if (to.fullPath === '/sections?sort=newest' || to.fullPath === '/librarian/sections?sort=newest') {
                 this.sort = 'newest'
                 this.runSearch()
             }
@@ -118,5 +129,25 @@ export default {
         max-height: unset;
         flex: 1; overflow: scroll;
     }
+}
+
+/* admin upload bar */
+.upload-bar {
+    width: 100%; display: flex; justify-content: center;
+    border-bottom: 1px solid black;
+}
+.upload-button {
+    padding: 10px 20px;
+    margin: 10px 10px;
+    color: #333;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    color: rgb(32, 33, 36);
+    background-color: rgb(138,180,248);
+}
+.upload-button:hover {
+    transform: translate(-2px, 1px);
+    background-color: rgb(69, 121, 204);
 }
 </style>

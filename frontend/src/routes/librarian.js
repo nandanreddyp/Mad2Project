@@ -15,32 +15,32 @@ export default [
             component: () => import("@/views/librarian/home.vue")
           },
           {
-            path: '/requests', 
+            path: 'requests', 
             name: 'librarian-requests',
-            component: () => import("@/views/librarian/requests/requests.vue")
+            component: () => import("@/views/librarian/requests.vue")
           },
           {
-            path: '/books', 
+            path: 'books', 
             name: 'librarian-books',
-            component: () => import("@/views/librarian/books/books.vue")
+            component: () => import("@/views/user/books/books.vue"),
           },
           {
-            path: '/books/:id',
+            path: 'books/:id',
             name: 'librarian-book',
             component: () => import("@/views/user/books/book.vue")
           },
           {
-            path: '/sections', 
+            path: 'sections', 
             name: 'librarian-sections',
-            component: () => import("@/views/librarian/sections/sections.vue")
+            component: () => import("@/views/user/sections/sections.vue")
           },
           {
-            path: '/sections/:id',
+            path: 'sections/:id',
             name: 'user-section',
             component: () => import("@/views/user/sections/section.vue")
           },
           {
-            path: '/authors', 
+            path: 'authors', 
             name: 'librarian-authors',
             component: () => import("@/views/librarian/authors/authors.vue")
           },

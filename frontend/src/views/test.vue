@@ -1,43 +1,47 @@
 <template>
-    <div class="container">
-        <div style="display: flex; gap: 10px; padding: 10px">
-            <button style="flex: 1;" @click="toggleAddBook">Create Book</button><button style="flex: 1;" @click="toggleEditBook">Edit Book</button>
-        </div>
-        <addBook v-if="add_book" :toggleAddBook="toggleAddBook"/>
-        <editBook v-if="edit_book" :toggleEditBook="toggleEditBook"/>
+    <div>
+      <input type="file" @change="handleFileChange" accept=".pdf">
+      <img :src="firstPageImage" v-if="firstPageImage">
     </div>
-</template>
-<script>
-import addBook from '@/components/books/addBook.vue';
-import editBook from '@/components/books/editBook.vue';
-
-export default{
-    components: { addBook, editBook },
-    data(){return{
-        add_book: false,
-        edit_book: false,
-    }},
-    props: {
-        // name: type,
+  </template>
+  
+  <script>
+  import pdfjsLib from 'pdfjs-dist/webpack';
+  
+  export default {
+    data() {
+      return {
+        firstPageImage: null
+      };
     },
     methods: {
-        toggleAddBook() {
-            this.add_book = !this.add_book
-        },
-        toggleEditBook() {
-            this.edit_book = !this.edit_book
+      async handleFileChange(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+  
+        try {
+          const pdf = await pdfjsLib.getDocument(URL.createObjectURL(file));
+          const page = await pdf.getPage(1);
+          const viewport = page.getViewport({ scale: 1 });
+  
+          const canvas = document.createElement('canvas');
+          const context = canvas.getContext('2d');
+          canvas.height = viewport.height;
+          canvas.width = viewport.width;
+  
+          const renderContext = {
+            canvasContext: context,
+            viewport: viewport
+          };
+  
+          await page.render(renderContext).promise;
+          const imageData = canvas.toDataURL('image/png');
+          this.firstPageImage = imageData;
+        } catch (error) {
+          console.error('Error loading PDF:', error);
         }
-    },
-    mounted(){
-
-    },
-    watch: {
-
+      }
     }
-}
-</script>
-<style scoped>
-.container {
-    overflow: auto;
-}
-</style>
+  };
+  </script>
+  

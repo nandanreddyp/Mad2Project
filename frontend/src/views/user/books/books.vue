@@ -1,4 +1,8 @@
 <template>
+    <div class="upload-bar" v-if="user.role==='librarian'">
+        <button class="upload-button" @click="toggleAddBook">Create New Book</button>
+        <addBook v-if="add_book" :toggleAddBook="toggleAddBook"/>
+    </div>
     <form @submit.prevent="runSearch" class="collection-header">
         <div class="search">
             <input v-model="query" name="query" type="search" placeholder="Search in books">
@@ -24,6 +28,7 @@
 import axiosClient from '@/services/axios';
 
 import booksList from '@/components/books/books.vue'
+import addBook from '@/components/books/addBook.vue';
 
 export default {
     data(){return {
@@ -37,14 +42,17 @@ export default {
         query: this.$route.query.query,
         sort: 'newest',
         // title
-        title: 'Recently added books'
+        title: 'Recently added books',
+        // librarian requirements
+        user: this.$store.state.user,
+        add_book: false,
     }},
     components: {
-        booksList,
+        booksList, addBook,
     },
     methods: {
         runSearch(){
-            this.$router.push({path:'/books',query:{query:this.query,sort:this.sort}})
+            this.$router.push({name: this.user.role === 'librarian' ? 'librarian-books' : 'user-books', query:{query:this.query,sort:this.sort}})
             this.page=1; this.books=[]; this.has_next = null
             if (this.query) {
                 if (this.sort === 'newest') {
@@ -91,6 +99,9 @@ export default {
                     this.loadBooks(this.page,this.per_page);
                 }
             }
+        },
+        toggleAddBook() {
+            this.add_book = !this.add_book
         }
     },
     mounted(){
@@ -98,7 +109,7 @@ export default {
     },
     watch: {
         $route(to, from) {
-            if (to.fullPath === '/books?sort=newest') {
+            if (to.fullPath === '/books?sort=newest' || to.fullPath === '/librarian/books?sort=newest') {
                 this.sort = 'newest'
                 this.runSearch()
             }
@@ -122,5 +133,25 @@ export default {
 }
 .collection-container {
     flex: 1; overflow: auto;
+}
+
+/* admin upload bar */
+.upload-bar {
+    width: 100%; display: flex; justify-content: center;
+    border-bottom: 1px solid black;
+}
+.upload-button {
+    padding: 10px 20px;
+    margin: 10px 10px;
+    color: #333;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    color: rgb(32, 33, 36);
+    background-color: rgb(138,180,248);
+}
+.upload-button:hover {
+    transform: translate(-2px, 1px);
+    background-color: rgb(69, 121, 204);
 }
 </style>

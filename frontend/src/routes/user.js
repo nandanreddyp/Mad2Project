@@ -15,37 +15,37 @@ export default [
                 component: () => import("@/views/user/home.vue")
             },
             {
-                path:'/requests',
+                path:'requests',
                 name: 'user-requests',
                 component: () => import("@/views/user/requests/requests.vue")
             },
             {
-                path:'/books',
+                path:'books',
                 name: 'user-books',
                 component: () => import("@/views/user/books/books.vue"),
             },
             {
-                path: '/books/:id',
+                path: 'books/:id',
                 name: 'user-book',
                 component: () => import("@/views/user/books/book.vue"),
             },
             {
-                path: '/sections',
+                path: 'sections',
                 name: 'user-sections',
                 component: () => import("@/views/user/sections/sections.vue")
             },
             {
-                path: '/sections/:id',
+                path: 'sections/:id',
                 name: 'user-section',
                 component: () => import("@/views/user/sections/section.vue")
             },
             {
-                path: '/author/:id',
+                path: 'author/:id',
                 name: 'user-author',
-                component: () => import("@/views/user/authors/author.vue")
+                component: () => import("@/views/librarian/authors/author.vue")
             },
             {
-                path: '/test',
+                path: 'test',
                 name: 'user-test',
                 component: () => import("@/views/test.vue")
             }
