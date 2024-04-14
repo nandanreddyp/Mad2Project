@@ -34,7 +34,7 @@ class Login(Resource):
                 db.session.commit()
                 access_token = create_access_token(identity=user.email, expires_delta=timedelta(hours=12))
                 return {'msg':'Logged in, successfully!','access_token':access_token, 'user':user.to_dict()}, 200
-            return {'msg':'Incorrect email or password.'}, 401
+            return {'msg':'Incorrect email or password.'}, 400
         return {'msg':'Provide all required fields and check format!'}, 400
 api.add_resource(Login,'/api/auth/login')
 

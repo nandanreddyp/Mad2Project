@@ -6,7 +6,7 @@ export default [
         component: UserLayout,
         meta: {
             requiresAuth: true,
-            role: ['user',],
+            role: ['user'],
         },
         children: [
             {

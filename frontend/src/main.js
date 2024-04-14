@@ -10,6 +10,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
+    console.log(to)
     const hasToken = store.state.isAuthenticated;
     if (to.meta.requiresAuth) {
         const roles = to.meta.role || []

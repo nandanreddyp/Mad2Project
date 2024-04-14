@@ -19,7 +19,7 @@ class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     email = db.Column(db.String, unique=True, nullable=False)
-    role = db.Column(db.String, default='user')
+    role = db.Column(db.String, default='user') # librarian or user
     password = db.Column(db.String)
     f_name = db.Column(db.String, nullable=False)
     l_name = db.Column(db.String)
