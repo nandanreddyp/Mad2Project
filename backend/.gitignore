@@ -1,4 +1,25 @@
 venv
 *__pycache__
 
+# keep necessary static files
+static/admin_graphs/*
+static/images/authors/*
+static/images/books/*
+static/images/profiles/*
+static/images/sections/*
+static/images/authors/*
+static/pdfs/*
+
+# keep necessary static files
+!static/admin_graphs/default.png
+!static/images/authors/default.png
+!static/images/books/default.png
+!static/images/profiles/default.png
+!static/images/sections/default.png
+!static/images/authors/default.png
+!static/pdfs/default.png
+
+# test data remove
+test_data
+
 database/database.db
