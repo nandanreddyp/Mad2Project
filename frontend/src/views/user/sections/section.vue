@@ -21,8 +21,10 @@
                         <span>{{'Created on: '+ formatISODate(section.created_date) }}</span>
                     </div>
                     <div class="section-options">
-                        <button class="blue">Edit</button>
-                        <button>Add books</button>
+                        <button @click="toggleEditSection" class="blue">Edit</button>
+                        <editSection v-if="edit_section" :toggleEditSection="toggleEditSection" :LoadSection="LoadSection" :updatedToast="updatedToast"/>
+                        <button @click="toggleAddBooks">Add books</button>
+                        <bookPickerDialog v-if="add_books" :type="type" :toggleAddBooks="toggleAddBooks" :reloadPage="LoadSection" :updatedToast="updatedToast"/>
                     </div>
                 </div>
             </div>
@@ -41,31 +43,56 @@
 <script>
 import axiosClient from '@/services/axios';
 
+import { toast } from 'vue3-toastify'
+import 'vue3-toastify/dist/index.css'
+
 import sectionBooks from '@/components/sections/sectionBooks.vue'
+import editSection from '@/components/sections/editSection.vue'
+import bookPickerDialog from '@/components/books/pickerDialog.vue'
 
 export default {
     data(){return{
+        type: 'section',
         section_loading: true,
         section_id: this.$route.params.id,
         section: null,
         books_loading: true,
+        // popup openers
+        edit_section: false,
+        add_books: false,
     }},
     components: {
-        sectionBooks,
+        sectionBooks, bookPickerDialog, editSection
     },
     methods: {
         formatISODate(isoDate) {
             const date = new Date(isoDate);
             return date.toLocaleDateString();
         },
+        toggleEditSection() {
+            this.edit_section = !this.edit_section
+        },
+        toggleAddBooks() {
+            this.add_books = !this.add_books
+        },
+        LoadSection() {
+            this.section_loading = true
+            setTimeout(()=>{
+                axiosClient.get(`/api/sections/${this.section_id}`)
+                .then(resp => {
+                    console.log(resp)
+                    this.section = resp.data.section
+                    this.section_loading = false
+                })
+            }, 2000)
+        },
+        updatedToast() {
+            toast.success('Updated section',{autoClose: 4000,})
+        }
     },
     mounted() {
-        axiosClient.get(`/api/sections/${this.section_id}`)
-        .then(resp=>{
-            this.section = resp.data
-            this.section_loading = false
-        })
-    }
+        this.LoadSection()
+    },
 }
 </script>
 
@@ -148,8 +175,43 @@ export default {
 
 
 
-/* section books */
-.section-books {
+/* skeleton loader */
 
+.skeleton-container {
+  background-color: #f5f5f5; /* Background color for the skeleton container */
+  border-radius: 5px; /* Rounded corners */
+  padding: 20px; /* Padding around the skeleton container */
+  margin-bottom: 20px; /* Margin bottom to create space between elements */
 }
+
+.skeleton-header {
+  display: flex;
+  align-items: center;
+}
+
+.skeleton-image {
+  width: 100px; /* Width of the skeleton image */
+  height: 100px; /* Height of the skeleton image */
+  background-color: #ccc; /* Background color for the skeleton image */
+  border-radius: 50%; /* Create a circular shape */
+  margin-right: 20px; /* Margin to create space between the image and details */
+}
+
+.skeleton-details {
+  flex: 1; /* Allow details to expand to fill remaining space */
+}
+
+.skeleton-meta {
+  width: 80%; /* Width of the skeleton meta */
+  height: 20px; /* Height of the skeleton meta */
+  background-color: #ccc; /* Background color for the skeleton meta */
+  margin-bottom: 10px; /* Margin bottom to create space between meta items */
+}
+
+.skeleton-description {
+  height: 100px; /* Height of the skeleton description */
+  background-color: #ccc; /* Background color for the skeleton description */
+  margin-top: 20px; /* Margin top to create space between header and description */
+}
+
 </style>

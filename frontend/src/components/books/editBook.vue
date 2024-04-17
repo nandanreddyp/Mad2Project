@@ -1,44 +1,40 @@
 <template>
     <div class="popup-bg">
         <div class="popup">
-            <div class="popup-header">Edit {{ book_name }}</div>
+            <div class="popup-header">Edit Book</div>
             <div class="body">
-                <div class="ratings-container">
-                    <div>What would you rate this book?</div>
-                        <div class="review-stars">
-                            <input id="1" name="stars" type="radio" v-model="formdata.rating" value="1">
-                            <input id="2" name="stars" type="radio" v-model="formdata.rating" value="2">
-                            <input id="3" name="stars" type="radio" v-model="formdata.rating" value="3">
-                            <input id="4" name="stars" type="radio" v-model="formdata.rating" value="4">
-                            <input id="5" name="stars" type="radio" v-model="formdata.rating" value="5">
-                            <label for="1">
-                                <svg v-if="!(formdata.rating > 0)" focusable="false" width="34" height="34" viewBox="0 0 40 40" class=" NMm5M"><path d="M25.19,24.72c-0.4-1.24,0.06-2.6,1.12-3.36l5.43-3.86l-6.65,0 c-1.31,0-2.46-0.84-2.86-2.09L20,8.47l-2.22,6.95c-0.4,1.24-1.55,2.09-2.86,2.09l-6.65,0l5.43,3.86c1.06,0.76,1.52,2.11,1.12,3.36 l-2.13,6.67l5.51-4.14c1.07-0.8,2.53-0.8,3.6,0l5.51,4.14L25.19,24.72z M30.02,34.67c-0.33,0.44-0.96,0.53-1.4,0.2l-8.02-6.02 c-0.36-0.27-0.84-0.27-1.2,0l-8.02,6.02c-0.26,0.19-0.6,0.25-0.9,0.15c-0.53-0.17-0.82-0.73-0.65-1.26l3.08-9.65 c0.13-0.41-0.02-0.87-0.37-1.12l-7.98-5.68c-0.26-0.19-0.42-0.49-0.42-0.82c0-0.55,0.45-1,1-1l9.78,0c0.44,0,0.82-0.28,0.95-0.7 l3.18-9.93c0.1-0.31,0.34-0.55,0.65-0.65c0.53-0.17,1.09,0.12,1.26,0.65l3.18,9.93c0.13,0.41,0.52,0.7,0.95,0.7l9.79,0 c0.32,0,0.63,0.16,0.82,0.42C36,16.37,35.9,17,35.45,17.32L27.46,23c-0.35,0.25-0.51,0.7-0.37,1.12l3.08,9.65 C30.27,34.07,30.22,34.41,30.02,34.67z" fill="#80868b"></path></svg>
-                                <svg v-else   focusable="false" width="34" height="34" viewBox="0 0 40 40" class=" NMm5M"><path d="M30.1738537,33.7654006 L27.0921483,24.1156159 C26.959813,23.7012327 27.1105413,23.2488331 27.4649676,22.9966268 L35.4477621,17.3161477 C35.8977477,16.9959424 36.0029553,16.3715793 35.68275,15.9215937 C35.4950528,15.6578223 35.1912764,15.5012346 34.8675395,15.5013769 L25.0804893,15.5056789 C24.6453619,15.5058702 24.2600542,15.2246667 24.1275461,14.8102063 L20.9521753,4.87824826 C20.7839895,4.35219504 20.2211976,4.06208615 19.6951444,4.23027193 C19.3871406,4.32874458 19.1457633,4.57007364 19.047229,4.87805774 L15.8695464,14.8103968 C15.7369778,15.2247605 15.3517177,15.5058702 14.916664,15.5056789 L5.13246101,15.5013772 C4.58017631,15.5011344 4.13226426,15.9486528 4.13202145,16.5009375 C4.13187911,16.8246744 4.28846681,17.1284508 4.55223829,17.316148 L12.5352875,22.9968084 C12.8895911,23.2489273 13.0403512,23.7011146 12.908231,24.1154083 L9.83068127,33.7657819 C9.66288114,34.2919582 9.95340248,34.8545373 10.4795788,35.0223375 C10.7880012,35.1206948 11.1249561,35.0636649 11.3838335,34.8692915 L19.3997363,28.8506971 C19.7553884,28.5836621 20.2446591,28.5835988 20.6003804,28.8505416 L28.6210329,34.8694549 C29.0627701,35.2009464 29.6895959,35.1115746 30.0210874,34.6698373 C30.2154254,34.4108674 30.2723531,34.073833 30.1738537,33.7654006 Z" fill="#fabb05"></path></svg>
-                            </label>
-                            <label for="2">
-                                <svg v-if="!(formdata.rating > 1)" focusable="false" width="34" height="34" viewBox="0 0 40 40" class=" NMm5M"><path d="M25.19,24.72c-0.4-1.24,0.06-2.6,1.12-3.36l5.43-3.86l-6.65,0 c-1.31,0-2.46-0.84-2.86-2.09L20,8.47l-2.22,6.95c-0.4,1.24-1.55,2.09-2.86,2.09l-6.65,0l5.43,3.86c1.06,0.76,1.52,2.11,1.12,3.36 l-2.13,6.67l5.51-4.14c1.07-0.8,2.53-0.8,3.6,0l5.51,4.14L25.19,24.72z M30.02,34.67c-0.33,0.44-0.96,0.53-1.4,0.2l-8.02-6.02 c-0.36-0.27-0.84-0.27-1.2,0l-8.02,6.02c-0.26,0.19-0.6,0.25-0.9,0.15c-0.53-0.17-0.82-0.73-0.65-1.26l3.08-9.65 c0.13-0.41-0.02-0.87-0.37-1.12l-7.98-5.68c-0.26-0.19-0.42-0.49-0.42-0.82c0-0.55,0.45-1,1-1l9.78,0c0.44,0,0.82-0.28,0.95-0.7 l3.18-9.93c0.1-0.31,0.34-0.55,0.65-0.65c0.53-0.17,1.09,0.12,1.26,0.65l3.18,9.93c0.13,0.41,0.52,0.7,0.95,0.7l9.79,0 c0.32,0,0.63,0.16,0.82,0.42C36,16.37,35.9,17,35.45,17.32L27.46,23c-0.35,0.25-0.51,0.7-0.37,1.12l3.08,9.65 C30.27,34.07,30.22,34.41,30.02,34.67z" fill="#80868b"></path></svg>
-                                <svg v-else   focusable="false" width="34" height="34" viewBox="0 0 40 40" class=" NMm5M"><path d="M30.1738537,33.7654006 L27.0921483,24.1156159 C26.959813,23.7012327 27.1105413,23.2488331 27.4649676,22.9966268 L35.4477621,17.3161477 C35.8977477,16.9959424 36.0029553,16.3715793 35.68275,15.9215937 C35.4950528,15.6578223 35.1912764,15.5012346 34.8675395,15.5013769 L25.0804893,15.5056789 C24.6453619,15.5058702 24.2600542,15.2246667 24.1275461,14.8102063 L20.9521753,4.87824826 C20.7839895,4.35219504 20.2211976,4.06208615 19.6951444,4.23027193 C19.3871406,4.32874458 19.1457633,4.57007364 19.047229,4.87805774 L15.8695464,14.8103968 C15.7369778,15.2247605 15.3517177,15.5058702 14.916664,15.5056789 L5.13246101,15.5013772 C4.58017631,15.5011344 4.13226426,15.9486528 4.13202145,16.5009375 C4.13187911,16.8246744 4.28846681,17.1284508 4.55223829,17.316148 L12.5352875,22.9968084 C12.8895911,23.2489273 13.0403512,23.7011146 12.908231,24.1154083 L9.83068127,33.7657819 C9.66288114,34.2919582 9.95340248,34.8545373 10.4795788,35.0223375 C10.7880012,35.1206948 11.1249561,35.0636649 11.3838335,34.8692915 L19.3997363,28.8506971 C19.7553884,28.5836621 20.2446591,28.5835988 20.6003804,28.8505416 L28.6210329,34.8694549 C29.0627701,35.2009464 29.6895959,35.1115746 30.0210874,34.6698373 C30.2154254,34.4108674 30.2723531,34.073833 30.1738537,33.7654006 Z" fill="#fabb05"></path></svg>
-                            </label>
-                            <label for="3">
-                                <svg v-if="!(formdata.rating > 2)" focusable="false" width="34" height="34" viewBox="0 0 40 40" class=" NMm5M"><path d="M25.19,24.72c-0.4-1.24,0.06-2.6,1.12-3.36l5.43-3.86l-6.65,0 c-1.31,0-2.46-0.84-2.86-2.09L20,8.47l-2.22,6.95c-0.4,1.24-1.55,2.09-2.86,2.09l-6.65,0l5.43,3.86c1.06,0.76,1.52,2.11,1.12,3.36 l-2.13,6.67l5.51-4.14c1.07-0.8,2.53-0.8,3.6,0l5.51,4.14L25.19,24.72z M30.02,34.67c-0.33,0.44-0.96,0.53-1.4,0.2l-8.02-6.02 c-0.36-0.27-0.84-0.27-1.2,0l-8.02,6.02c-0.26,0.19-0.6,0.25-0.9,0.15c-0.53-0.17-0.82-0.73-0.65-1.26l3.08-9.65 c0.13-0.41-0.02-0.87-0.37-1.12l-7.98-5.68c-0.26-0.19-0.42-0.49-0.42-0.82c0-0.55,0.45-1,1-1l9.78,0c0.44,0,0.82-0.28,0.95-0.7 l3.18-9.93c0.1-0.31,0.34-0.55,0.65-0.65c0.53-0.17,1.09,0.12,1.26,0.65l3.18,9.93c0.13,0.41,0.52,0.7,0.95,0.7l9.79,0 c0.32,0,0.63,0.16,0.82,0.42C36,16.37,35.9,17,35.45,17.32L27.46,23c-0.35,0.25-0.51,0.7-0.37,1.12l3.08,9.65 C30.27,34.07,30.22,34.41,30.02,34.67z" fill="#80868b"></path></svg>
-                                <svg v-else   focusable="false" width="34" height="34" viewBox="0 0 40 40" class=" NMm5M"><path d="M30.1738537,33.7654006 L27.0921483,24.1156159 C26.959813,23.7012327 27.1105413,23.2488331 27.4649676,22.9966268 L35.4477621,17.3161477 C35.8977477,16.9959424 36.0029553,16.3715793 35.68275,15.9215937 C35.4950528,15.6578223 35.1912764,15.5012346 34.8675395,15.5013769 L25.0804893,15.5056789 C24.6453619,15.5058702 24.2600542,15.2246667 24.1275461,14.8102063 L20.9521753,4.87824826 C20.7839895,4.35219504 20.2211976,4.06208615 19.6951444,4.23027193 C19.3871406,4.32874458 19.1457633,4.57007364 19.047229,4.87805774 L15.8695464,14.8103968 C15.7369778,15.2247605 15.3517177,15.5058702 14.916664,15.5056789 L5.13246101,15.5013772 C4.58017631,15.5011344 4.13226426,15.9486528 4.13202145,16.5009375 C4.13187911,16.8246744 4.28846681,17.1284508 4.55223829,17.316148 L12.5352875,22.9968084 C12.8895911,23.2489273 13.0403512,23.7011146 12.908231,24.1154083 L9.83068127,33.7657819 C9.66288114,34.2919582 9.95340248,34.8545373 10.4795788,35.0223375 C10.7880012,35.1206948 11.1249561,35.0636649 11.3838335,34.8692915 L19.3997363,28.8506971 C19.7553884,28.5836621 20.2446591,28.5835988 20.6003804,28.8505416 L28.6210329,34.8694549 C29.0627701,35.2009464 29.6895959,35.1115746 30.0210874,34.6698373 C30.2154254,34.4108674 30.2723531,34.073833 30.1738537,33.7654006 Z" fill="#fabb05"></path></svg>
-                            </label>
-                            <label for="4">
-                                <svg v-if="!(formdata.rating > 3)" focusable="false" width="34" height="34" viewBox="0 0 40 40" class=" NMm5M"><path d="M25.19,24.72c-0.4-1.24,0.06-2.6,1.12-3.36l5.43-3.86l-6.65,0 c-1.31,0-2.46-0.84-2.86-2.09L20,8.47l-2.22,6.95c-0.4,1.24-1.55,2.09-2.86,2.09l-6.65,0l5.43,3.86c1.06,0.76,1.52,2.11,1.12,3.36 l-2.13,6.67l5.51-4.14c1.07-0.8,2.53-0.8,3.6,0l5.51,4.14L25.19,24.72z M30.02,34.67c-0.33,0.44-0.96,0.53-1.4,0.2l-8.02-6.02 c-0.36-0.27-0.84-0.27-1.2,0l-8.02,6.02c-0.26,0.19-0.6,0.25-0.9,0.15c-0.53-0.17-0.82-0.73-0.65-1.26l3.08-9.65 c0.13-0.41-0.02-0.87-0.37-1.12l-7.98-5.68c-0.26-0.19-0.42-0.49-0.42-0.82c0-0.55,0.45-1,1-1l9.78,0c0.44,0,0.82-0.28,0.95-0.7 l3.18-9.93c0.1-0.31,0.34-0.55,0.65-0.65c0.53-0.17,1.09,0.12,1.26,0.65l3.18,9.93c0.13,0.41,0.52,0.7,0.95,0.7l9.79,0 c0.32,0,0.63,0.16,0.82,0.42C36,16.37,35.9,17,35.45,17.32L27.46,23c-0.35,0.25-0.51,0.7-0.37,1.12l3.08,9.65 C30.27,34.07,30.22,34.41,30.02,34.67z" fill="#80868b"></path></svg>
-                                <svg v-else   focusable="false" width="34" height="34" viewBox="0 0 40 40" class=" NMm5M"><path d="M30.1738537,33.7654006 L27.0921483,24.1156159 C26.959813,23.7012327 27.1105413,23.2488331 27.4649676,22.9966268 L35.4477621,17.3161477 C35.8977477,16.9959424 36.0029553,16.3715793 35.68275,15.9215937 C35.4950528,15.6578223 35.1912764,15.5012346 34.8675395,15.5013769 L25.0804893,15.5056789 C24.6453619,15.5058702 24.2600542,15.2246667 24.1275461,14.8102063 L20.9521753,4.87824826 C20.7839895,4.35219504 20.2211976,4.06208615 19.6951444,4.23027193 C19.3871406,4.32874458 19.1457633,4.57007364 19.047229,4.87805774 L15.8695464,14.8103968 C15.7369778,15.2247605 15.3517177,15.5058702 14.916664,15.5056789 L5.13246101,15.5013772 C4.58017631,15.5011344 4.13226426,15.9486528 4.13202145,16.5009375 C4.13187911,16.8246744 4.28846681,17.1284508 4.55223829,17.316148 L12.5352875,22.9968084 C12.8895911,23.2489273 13.0403512,23.7011146 12.908231,24.1154083 L9.83068127,33.7657819 C9.66288114,34.2919582 9.95340248,34.8545373 10.4795788,35.0223375 C10.7880012,35.1206948 11.1249561,35.0636649 11.3838335,34.8692915 L19.3997363,28.8506971 C19.7553884,28.5836621 20.2446591,28.5835988 20.6003804,28.8505416 L28.6210329,34.8694549 C29.0627701,35.2009464 29.6895959,35.1115746 30.0210874,34.6698373 C30.2154254,34.4108674 30.2723531,34.073833 30.1738537,33.7654006 Z" fill="#fabb05"></path></svg>
-                            </label>
-                            <label for="5">
-                                <svg v-if="!(formdata.rating > 4)" focusable="false" width="34" height="34" viewBox="0 0 40 40" class=" NMm5M"><path d="M25.19,24.72c-0.4-1.24,0.06-2.6,1.12-3.36l5.43-3.86l-6.65,0 c-1.31,0-2.46-0.84-2.86-2.09L20,8.47l-2.22,6.95c-0.4,1.24-1.55,2.09-2.86,2.09l-6.65,0l5.43,3.86c1.06,0.76,1.52,2.11,1.12,3.36 l-2.13,6.67l5.51-4.14c1.07-0.8,2.53-0.8,3.6,0l5.51,4.14L25.19,24.72z M30.02,34.67c-0.33,0.44-0.96,0.53-1.4,0.2l-8.02-6.02 c-0.36-0.27-0.84-0.27-1.2,0l-8.02,6.02c-0.26,0.19-0.6,0.25-0.9,0.15c-0.53-0.17-0.82-0.73-0.65-1.26l3.08-9.65 c0.13-0.41-0.02-0.87-0.37-1.12l-7.98-5.68c-0.26-0.19-0.42-0.49-0.42-0.82c0-0.55,0.45-1,1-1l9.78,0c0.44,0,0.82-0.28,0.95-0.7 l3.18-9.93c0.1-0.31,0.34-0.55,0.65-0.65c0.53-0.17,1.09,0.12,1.26,0.65l3.18,9.93c0.13,0.41,0.52,0.7,0.95,0.7l9.79,0 c0.32,0,0.63,0.16,0.82,0.42C36,16.37,35.9,17,35.45,17.32L27.46,23c-0.35,0.25-0.51,0.7-0.37,1.12l3.08,9.65 C30.27,34.07,30.22,34.41,30.02,34.67z" fill="#80868b"></path></svg>
-                                <svg v-else   focusable="false" width="34" height="34" viewBox="0 0 40 40" class=" NMm5M"><path d="M30.1738537,33.7654006 L27.0921483,24.1156159 C26.959813,23.7012327 27.1105413,23.2488331 27.4649676,22.9966268 L35.4477621,17.3161477 C35.8977477,16.9959424 36.0029553,16.3715793 35.68275,15.9215937 C35.4950528,15.6578223 35.1912764,15.5012346 34.8675395,15.5013769 L25.0804893,15.5056789 C24.6453619,15.5058702 24.2600542,15.2246667 24.1275461,14.8102063 L20.9521753,4.87824826 C20.7839895,4.35219504 20.2211976,4.06208615 19.6951444,4.23027193 C19.3871406,4.32874458 19.1457633,4.57007364 19.047229,4.87805774 L15.8695464,14.8103968 C15.7369778,15.2247605 15.3517177,15.5058702 14.916664,15.5056789 L5.13246101,15.5013772 C4.58017631,15.5011344 4.13226426,15.9486528 4.13202145,16.5009375 C4.13187911,16.8246744 4.28846681,17.1284508 4.55223829,17.316148 L12.5352875,22.9968084 C12.8895911,23.2489273 13.0403512,23.7011146 12.908231,24.1154083 L9.83068127,33.7657819 C9.66288114,34.2919582 9.95340248,34.8545373 10.4795788,35.0223375 C10.7880012,35.1206948 11.1249561,35.0636649 11.3838335,34.8692915 L19.3997363,28.8506971 C19.7553884,28.5836621 20.2446591,28.5835988 20.6003804,28.8505416 L28.6210329,34.8694549 C29.0627701,35.2009464 29.6895959,35.1115746 30.0210874,34.6698373 C30.2154254,34.4108674 30.2723531,34.073833 30.1738537,33.7654006 Z" fill="#fabb05"></path></svg>
-                            </label>
-                        </div>
+                <form ref="myForm" id="book-form">
+
+                    <label for="name">Book Name</label>
+                    <input v-model="formdata.name" type="text" id="name" name="name" required ><br><br>
+
+                    <div class="book-description">
+                        <label for="description">Description</label>
+                        <textarea v-model="formdata.description" id="description" name="description" placeholder="Description about this books" ></textarea>
+                    </div><br>
+
+                    <label for="pdf_file">PDF File <span style="font-size:10px">(Select new file, only if want chagne)</span></label>
+                    <input ref="PDF" type="file" id="pdf_file" accept="application/pdf" ><br>
+
+                    <label for="img_file">Cover Image <span style="font-size:10px">(Select new file, only if want chagne)</span></label>
+                    <div style="display: flex; justify-content: center; margin-bottom: 6px;">
+                        <img id="selectedImgPreview" class="" src="" alt=""> <!--add visible class to show-->
                     </div>
-                <div class="review-description">
-                    <textarea placeholder="Share details of your own experience about this books"></textarea>
-                </div>
+                    <input @change="showSelectedImage" ref="IMG" type="file" id="img_file"  accept="image/*"><br><br>
+
+                    <label for="page-count">Page Count</label>
+                    <input v-model="formdata.page_count" type="number" id="page_count" name="page_count" min="1" ><br><br>
+
+                    <label for="publication-date">Publication Date</label>
+                    <input v-model="formdata.publication_date" type="date" id="publication-date" name="publication_date"><br><br>
+
+                    <label for="isbn">ISBN</label>
+                    <input v-model="formdata.isbn" type="number" id="isbn" name="isbn"><br><br>
+
+                </form>
             </div>
             <div class="popup-options">
-                <button class="ok"     @click="updateReview"    >Update</button>
+                <button class="ok"     @click="checkForm"    >Update</button>
                 <button class="delete" @click="toggleDeletePopup"    >Delete</button>
                 <button class="cancel" @click="toggleEditBook" >Cancel</button>
             </div>
@@ -47,8 +43,6 @@
     <deletePopup v-if="show_delete_popup" @confirm="delete_post=true; show_delete_popup = false" @cancel="show_delete_popup = false" />
 </template>
 <script>
-import { formUpdateToast, formDeleteToast } from '@/services/toast'
-
 import axiosClient from '@/services/axios'
 
 import deletePopup from '@/components/layout/delete.vue'
@@ -57,36 +51,166 @@ export default {
     components: {
         deletePopup,
     },
+    props: {
+        LoadBook: Function, toggleEditBook: Function, updatedToast: Function,
+    },
     data() {return {
-        book_id: '',
-        book_name: 'This is book name his is book name his is book namehis is book namehis is book namehis is book namehis is book namehis is book namehis is book namehis is book namehis is book namehis is book namehis is book namehis is book namehis is book name',
+        book_id: this.$route.params.id,
         formdata: {
-            rating: '',
+            name: '',
             description: '',
+            publication_date: '',
+            isbn: '',
+            pdf_file: null,
+            image_file: null,
+            page_count: '',
         },
         // delete
         show_delete_popup: false,
         delete_post: false,
     }},
     methods:{
-        updateReview(){
-            axiosClient.post(``)
-            .then(resp=>{
-
-            })
-        },
         toggleDeletePopup(){
             this.show_delete_popup = true
+        },
+        showSelectedImage() {
+            const image_file = document.getElementById("img_file");
+            const image_file_preview = document.getElementById("selectedImgPreview");
+            const files = image_file.files[0];
+            if (files) {
+                image_file_preview.classList.add('visible')
+                const fileReader = new FileReader();
+                fileReader.readAsDataURL(files);
+                fileReader.addEventListener("load", function () {
+                image_file_preview.src = this.result
+                });    
+            } else {
+                image_file_preview.classList.remove('visible')
+                image_file_preview.src = ''
+            }
+        },
+        checkForm(){
+            if (this.$refs.myForm.reportValidity()) {
+                this.formdata.pdf_file = this.$refs.PDF.files[0]
+                this.formdata.image_file = this.$refs.IMG.files[0]
+                this.submitForm()
+            }
+        },
+        submitForm() {
+            axiosClient.put(`/api/books/${this.book_id}`,this.formdata,{
+                headers:{
+                    'Content-Type': 'multipart/form-data',
+                }
+            })
+            .then(resp => {
+                this.toggleEditBook() // close edit popup
+                this.LoadBook() // after update
+                this.updatedToast() // show toast for update
+            })
+        },
+        deleteForm() {
+            axiosClient.delete(`/api/books/${this.book_id}`)
+            .then(resp => {
+                this.$router.push({ name: 'librarian-books', query: { msg: 'deleted'}})
+            })
+        },
+        LoadBookData() {
+            axiosClient.get(`/api/books/${this.book_id}`)
+            .then(resp => {
+                console.log(resp.data.book)
+                this.formdata.name = resp.data.book.name
+                this.formdata.description = resp.data.book.description
+                this.formdata.page_count = resp.data.book.page_count
+                this.formdata.publication_date = resp.data.book.publication_date ? resp.data.book.publication_date.split('T')[0] : ''
+                this.formdata.isbn = resp.data.book.isbn
+            })
         }
     },
     watch: {
         delete_post (to, from){
-            
+            this.deleteForm()
         }
     },
-    props: {
-        toggleEditBook: Function, 
-    }
+    mounted() {
+        this.LoadBookData()
+        let scriptElement = document.createElement('script'); // cdn injecting
+        scriptElement.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js";
+        document.head.appendChild(scriptElement)
+        scriptElement = document.createElement('script') // script injecting
+        scriptElement.textContent = `
+        document.getElementById('pdf_file').addEventListener('change', function(event) {
+          var file = event.target.files[0];
+          var reader = new FileReader();
+          if (file) {
+            reader.onload = function() {
+                var pdfData = new Uint8Array(this.result);
+
+                // Load the PDF file
+                pdfjsLib.getDocument({ data: pdfData }).promise.then(function(pdf) {
+                    // Get the total number of pages
+                    var pageCount = pdf.numPages;
+
+                    // Set the page count in the input field
+                    document.getElementById('page_count').value = pageCount;
+
+                    // Fetch the first page
+                    return pdf.getPage(1);
+                }).then(function(page) {
+                    var viewport = page.getViewport({ scale: 1.0 });
+                    var canvas = document.createElement('canvas');
+                    var context = canvas.getContext('2d');
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+
+                    // Render the page onto the canvas
+                    var renderTask = page.render({ canvasContext: context, viewport: viewport }).promise;
+                    renderTask.then(function() {
+                        // Convert the canvas to an image
+                        var imageUrl = canvas.toDataURL();
+
+                        // Create a new input element for the image
+                        var imageInput = document.getElementById('img_file');
+
+                        // Set the image data as the value of the input
+                        var blob = dataURLToBlob(imageUrl);
+                        var file = new File([blob], 'image.png', { type: 'image/png' });
+                        var dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(new File([blob], 'extracted_image.png', { type: 'image/png' }));
+                        imageInput.files = dataTransfer.files;
+
+                        imageInput.dispatchEvent(new Event('change')); // important to trigger evet
+                    });
+                });
+            }    
+            reader.readAsArrayBuffer(file);
+          } else {
+            var imageInput = document.getElementById('img_file')
+            imageInput.files = null
+            imageInput.value = ''
+
+            var image_file_preview = document.getElementById("selectedImgPreview")
+            image_file_preview.classList.remove('visible')
+            image_file_preview.src = ''
+
+            // set pagecount to none
+            document.getElementById('page-count').value = null;
+          }
+        });
+        // Helper function to convert data URL to Blob
+        function dataURLToBlob(dataURL) {
+            var parts = dataURL.split(';base64,');
+            var contentType = parts[0].split(':')[1];
+            var raw = window.atob(parts[1]);
+            var rawLength = raw.length;
+            var uInt8Array = new Uint8Array(rawLength);
+            for (var i = 0; i < rawLength; ++i) {
+                uInt8Array[i] = raw.charCodeAt(i);
+            }
+            return new Blob([uInt8Array], { type: contentType });
+        }
+        `;
+        document.body.appendChild(scriptElement); // script injection done
+    },
 }
 </script>
 
@@ -134,6 +258,7 @@ export default {
     white-space: nowrap; /* Prevents wrapping of text */
     text-overflow: ellipsis; /* Add ellipsis for overflowed text */
     margin: 0px auto; /* Center the text horizontally */
+    margin-bottom: 5px;
     text-align: center;
 }
 
@@ -154,15 +279,15 @@ div.body {
 .review-stars input {
     display: none;
 }
-.review-description {
+.book-description {
     width: 100%;
 }
-.review-description textarea {
-    width: 100%; height: 300px;
+.book-description textarea {
+    width: 100%; height: 150px;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    margin: 16px 0px;
+    /* margin: 16px 0px; */
     line-height: 1.5rem;
     resize: none;
 
@@ -172,10 +297,46 @@ div.body {
     font-weight: 400;
 }
 
+/* form css */
+#book-form {
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="file"],
+input[type="date"],
+textarea {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+/* selected image */
+#selectedImgPreview.visible {
+    display: unset;
+    width: 100px; background-color: black; height: 150px;
+    object-fit: cover;
+}
+#selectedImgPreview {
+    display: none;
+}
+
 
 /* footer */
 .popup-options {
-    width: 100%; /* Occupy full width of the popup */
+    width: 100%; margin-top: 5px;
     display: flex; justify-content: space-evenly;
 }
 .popup-options button {
@@ -190,17 +351,18 @@ div.body {
     color: rgb(32, 33, 36);
     background-color: rgb(138,180,248);
 }
-.popup-options button.delete {
-    border: 1px solid red;
-    color: #333;
-}
-.popup-options button.delete:hover {
-    background-color: red; color: white;
-}
-
 .popup-options button.cancel {
     border: 1px solid black;
     color: #333;
+}
+.popup-options button.delete {
+    border: 1px solid black;
+    color: #333;
+}
+
+
+.popup-options button.delete:hover {
+    border: 1px solid red;
 }
 .popup-options button:hover {
     transform: translate(-2px, 1px);

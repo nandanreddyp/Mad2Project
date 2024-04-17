@@ -49,17 +49,19 @@ export default {
     },
     methods: {
         fetchLastBook() {
-            this.is_last_book = true;
-            setTimeout(()=>{
-                axiosClient.get(`/api/books/${1}`)
-                .then(resp => {
-                    this.last_book.push(resp.data.book)
-                })
-                this.loading = false;
-            }, 2000)
+            this.is_last_book = false;
+            if (this.is_last_book) {
+                setTimeout(()=>{
+                    axiosClient.get(`/api/books/${this.$store.state.user.last_book}`)
+                    .then(resp => {
+                        this.last_book.push(resp.data.book)
+                    })
+                    this.loading = false;
+                }, 2000)
+            }
         },
         fetchAccessBooks() {
-            this.is_access_books = true;
+            this.is_access_books = false;
             setTimeout(()=>{
                 axiosClient.get(`/api/books?per_page=6`)
                 .then(resp => {

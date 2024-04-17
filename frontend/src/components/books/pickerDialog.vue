@@ -4,7 +4,7 @@
         <div class="picker-dialog">
             <div class="popup-header">
                 <h2>Select books to add</h2>
-                <svg height="25px" id="Layer_1" style="cursor: pointer;enable-background:new 0 0 512 512;" version="1.1" viewBox="0 0 512 512" width="25px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M443.6,387.1L312.4,255.4l131.5-130c5.4-5.4,5.4-14.2,0-19.6l-37.4-37.6c-2.6-2.6-6.1-4-9.8-4c-3.7,0-7.2,1.5-9.8,4  L256,197.8L124.9,68.3c-2.6-2.6-6.1-4-9.8-4c-3.7,0-7.2,1.5-9.8,4L68,105.9c-5.4,5.4-5.4,14.2,0,19.6l131.5,130L68.4,387.1  c-2.6,2.6-4.1,6.1-4.1,9.8c0,3.7,1.4,7.2,4.1,9.8l37.4,37.6c2.7,2.7,6.2,4.1,9.8,4.1c3.5,0,7.1-1.3,9.8-4.1L256,313.1l130.7,131.1  c2.7,2.7,6.2,4.1,9.8,4.1c3.5,0,7.1-1.3,9.8-4.1l37.4-37.6c2.6-2.6,4.1-6.1,4.1-9.8C447.7,393.2,446.2,389.7,443.6,387.1z"/></svg>
+                <svg @click="closePopup" height="25px" id="Layer_1" style="cursor: pointer;enable-background:new 0 0 512 512;" version="1.1" viewBox="0 0 512 512" width="25px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M443.6,387.1L312.4,255.4l131.5-130c5.4-5.4,5.4-14.2,0-19.6l-37.4-37.6c-2.6-2.6-6.1-4-9.8-4c-3.7,0-7.2,1.5-9.8,4  L256,197.8L124.9,68.3c-2.6-2.6-6.1-4-9.8-4c-3.7,0-7.2,1.5-9.8,4L68,105.9c-5.4,5.4-5.4,14.2,0,19.6l131.5,130L68.4,387.1  c-2.6,2.6-4.1,6.1-4.1,9.8c0,3.7,1.4,7.2,4.1,9.8l37.4,37.6c2.7,2.7,6.2,4.1,9.8,4.1c3.5,0,7.1-1.3,9.8-4.1L256,313.1l130.7,131.1  c2.7,2.7,6.2,4.1,9.8,4.1c3.5,0,7.1-1.3,9.8-4.1l37.4-37.6c2.6-2.6,4.1-6.1,4.1-9.8C447.7,393.2,446.2,389.7,443.6,387.1z"/></svg>
             </div>
             <div class="popup-search-sort">
                 <form class="main-header-search" @submit.prevent="" >
@@ -27,7 +27,7 @@
             </div>
             <div class="popup-results">
                 <h3 style="padding-left: 6px;">Latest books</h3>
-                <div class="books-list" v-if="loaded">
+                <div class="books-list" v-if="!loading">
                     <div class="book-list-item" v-for="book in books" :key="book.id">
                         <img class="book-list-logo" :src="book.img_path" alt="">
                         <div class="book-list-details">
@@ -71,18 +71,19 @@ import axiosClient from '@/services/axios'
 
 export default {
     data() { return {
+        id: this.$route.params.id,
         books: [],
-        loaded: false,
         loading: true,
-        perpage: 0,
+        perpage: 7,
     }},
+    props: {
+        toggleAddBooks: Function, LoadAuthor: Function, type: String, updatedToast: Function, reloadPage: Function,
+    },
     mounted() {
         this.fetchBooks()
-        setTimeout(()=>{this.loaded = true},2000)
-        window.addEventListener("scroll", this.handleScroll)
     },
     unmounted(){
-        window.removeEventListener("scroll", this.handleScroll)
+
     },
     methods: {
         formatISODate(isoDate) {
@@ -90,37 +91,49 @@ export default {
             return date.toLocaleDateString();
         },
         fetchBooks() {
-            axiosClient.get(`/api/books?per_page=10`)
-            .then(async resp => {
+            let url
+            if (this.type=='author') {
+                url = `/api/authors/${this.id}/add/books`
+            } else {
+                url = `/api/sections/${this.id}/add/books`
+            }
+            axiosClient.get(url)
+            .then( resp => {
+                console.log(resp)
                 this.books = resp.data.books
-                // console.log(resp.data)
-                for (let i=0; i < this.books.length; i++) {
-                    const book = this.books[i];
-                    book.is_associated = await this.isBookIn(book.id)
-                }
+                this.loading = false
             })
-        },
-        handleScroll (event) {
-            alert('scrolled')
-        },
-        async isBookIn(book_id) {
-            const resp = await axiosClient.get(`/api/sections/1/books/${book_id}`)
-            const is_associated = resp.data.is_associated
-            return is_associated
         },
         addBook(book_id) {
             const index = this.books.findIndex(book => book.id === book_id)
             if (index !== -1) {
                 this.books[index].is_associated = true
-                axiosClient.post(`/api/sections/1/books/${book_id}`)
+                let url
+                if (this.type=='author') {
+                    url = `/api/authors/${this.id}/add/books/${book_id}`
+                } else {
+                    url = `/api/sections/${this.id}/add/books/${book_id}`
+                }
+                axiosClient.post(url)
             }
         },
         removeBook(book_id) {
             const index = this.books.findIndex(book => book.id === book_id)
             if (index !== -1) {
                 this.books[index].is_associated = false
-                axiosClient.delete(`/api/sections/1/books/${book_id}`)
+                let url
+                if (this.type=='author') {
+                    url = `/api/authors/${this.id}/add/books/${book_id}`
+                } else {
+                    url = `/api/sections/${this.id}/add/books/${book_id}`
+                }
+                axiosClient.delete(url)
             }
+        },
+        closePopup() {
+            this.toggleAddBooks()
+            this.updatedToast()
+            this.reloadPage()
         }
     }
 }

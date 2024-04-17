@@ -1,7 +1,7 @@
 <template>
     <div class="upload-bar" v-if="user.role==='librarian'">
         <button class="upload-button" @click="toggleAddSection">Create New Section</button>
-        <addSection v-if="add_section" :toggleAddSection="toggleAddSection"/>
+        <addSection v-if="add_section" :toggleAddSection="toggleAddSection" :addedToast="addedToast" :reloadPage="makeDefaultPageView"/>
     </div>
     <form @submit.prevent="runSearch" class="collection-header">
         <div class="search">
@@ -10,8 +10,8 @@
         </div>
         <div class="collection-sort">
             Sort by
-            <select v-model="sort" @change="runSearch" name="sort" id="">
-                <option value="newest" :selected="sort === 'newest'" >Recent</option>
+            <select title="sort by" v-model="sort" @change="runSearch" name="sort" id="">
+                <option value="" :selected="sort === 'newest'" >Recent</option>
                 <option value="oldest" :selected="sort === 'oldest'" >Oldest</option>
                 <option value="asc"    :selected="sort === 'asc'"    >Name (A-Z)</option>
                 <option value="desc"   :selected="sort === 'desc'"   >Name (Z-A)</option>
@@ -20,12 +20,15 @@
     </form>
     <div class="collection-title">{{title}}</div>
     <div class="collection-container" v-on:scroll="handleScroll" ref="sectionsContainer">
-        <sectionsList :sections="sections" :loading="loading"/>
+        <sectionsList :sections="sections" :has_next="has_next" :loading="loading"/>
     </div>
 </template>
 
 <script>
 import axiosClient from '@/services/axios';
+
+import { toast } from 'vue3-toastify'
+import 'vue3-toastify/dist/index.css'
 
 import sectionsList from '@/components/sections/sections.vue'
 import addSection from '@/components/sections/addSection.vue';
@@ -34,10 +37,13 @@ export default {
     data(){return{
         // lodaing data
         sections: [],
+        page: 1,
+        per_page: 7,
+        has_next: null,
         loading: true,
         // filter
-        query: this.$route.query.query,
-        sort: 'newest',
+        query: this.$route.query.query || "",
+        sort: this.$route.query.sort || "",
         // title
         title: 'Sections to explore books',
         // librarian requirements
@@ -49,10 +55,13 @@ export default {
     },
     methods: {
         runSearch() {
-            this.$router.push({name: this.user.role === 'librarian' ? 'librarian-sections' : 'user-sections', query:{query:this.query,sort:this.sort}})
-            this.sections=[]
+            this.$router.push(
+                {name: this.user.role === 'librarian' ? 'librarian-sections' : 'user-sections', 
+                query: {...(this.query !== '' && { query: this.query }), ...(this.sort !== '' && { sort: this.sort }),}
+            })
+            this.page=1; this.sections=[]; this.has_next = null
             if (this.query) {
-                if (this.sort === 'newest') {
+                if (this.sort === '') {
                     this.title=`Recent sections with search "${this.query}"`
                 } else if (this.sort === 'oldest') {
                     this.title=`Oldest sections with search "${this.query}"`
@@ -62,7 +71,7 @@ export default {
                     this.title=`Sections with search "${this.query}", sorted Z-A`
                 }
             } else {
-                if (this.sort === 'newest') {
+                if (this.sort === '') {
                     this.title='Recently added sections'
                 } else if (this.sort === 'oldest') {
                     this.title='Oldest sections'
@@ -72,32 +81,60 @@ export default {
                     this.title='Sections sorted by Name (Z-A)'
                 }
             }
-            this.loadSections()
+            // this.loadSections()
         },
-        loadSections() {
+        loadSections(page, per_page) {
             this.loading = true
             setTimeout(() => {
-                axiosClient.get(`/api/sections?query=${this.query ? this.query : ''}&sort=${this.sort ? this.sort : ''}`)
+                axiosClient.get(`/api/sections?query=${this.query}&sort=${this.sort || 'newest' }&page=${page}&per_page=${per_page}`)
                 .then(resp => {
+                    this.has_next = resp.data.page_data.has_next
                     resp.data.sections.forEach(obj => {
                         this.sections.push(obj)
                     })
+                    this.loading = false;
                 })
-                this.loading = false;
             }, 2000)
+        },
+        handleScroll() {
+            const container = this.$refs.sectionsContainer;
+            const bottomOffset = container.scrollHeight - container.scrollTop - container.clientHeight;
+            if (bottomOffset === 0 && !this.loading) {
+                if (this.has_next !== false) {
+                    this.page++
+                    this.loadSections(this.page,this.per_page);
+                }
+            }
         },
         toggleAddSection() {
             this.add_section = !this.add_section
+        },
+        addedToast() {
+            toast.success('Added section',{autoClose: 4000,})
+        },
+        showRedirectToasts() {
+            if (this.$route.query.msg) { // for toast messages
+                if (this.$route.query.msg === 'deleted') {
+                toast.error('Deleted section',{autoClose: 4000,})
+                }
+            }
+        },
+        makeDefaultPageView() {
+            this.sort=''; this.query=''; this.page=1; this.has_next=null; this.sections = []; this.title = 'Recently added sections';
+            this.loadSections(this.page, this.per_page)
         }
     },
     mounted(){
-        this.runSearch()
+        this.showRedirectToasts()
+        this.makeDefaultPageView()
     },
     watch: {
         $route(to, from) {
-            if (to.fullPath === '/sections?sort=newest' || to.fullPath === '/librarian/sections?sort=newest') {
-                this.sort = 'newest'
-                this.runSearch()
+            this.showRedirectToasts()
+            if (to.fullPath === '/sections' || to.fullPath === '/librarian/sections') { // for sidebar click
+                this.makeDefaultPageView()
+            } else {
+                this.loadSections(this.page, this.per_page )
             }
         }
     }
@@ -116,19 +153,9 @@ export default {
     font-size: 20px;
     font-weight: 700;
     padding: 5px;
-    max-height: 35px;
 }
 .collection-container {
-    /* max-height: calc(100% - 35px); */
-    flex: 1; overflow-y: scroll;
-}
-
-/* according to display*/
-@media screen and (max-width: 560px) {
-    .collection-container{
-        max-height: unset;
-        flex: 1; overflow: scroll;
-    }
+    flex: 1; overflow: auto;
 }
 
 /* admin upload bar */

@@ -36,7 +36,7 @@ export default [
           },
           {
             path: 'sections/:id',
-            name: 'user-section',
+            name: 'librarian-section',
             component: () => import("@/views/user/sections/section.vue")
           },
           {
@@ -45,7 +45,7 @@ export default [
             component: () => import("@/views/librarian/authors/authors.vue")
           },
           {
-            path: '/authors/:id',
+            path: 'authors/:id',
             name: 'librarian-author',
             component: () => import("@/views/librarian/authors/author.vue")
           },

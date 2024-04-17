@@ -4,7 +4,8 @@ from datetime import date, datetime
 
 db = SQLAlchemy()
 
-base_url_src = 'http://127.0.0.1:5000'
+
+image_domain = 'http://127.0.0.1:5000'
 
 book_author_association = db.Table('book_author_association',
     db.Column('book_id', db.Integer, db.ForeignKey('books.id'), primary_key=True),
@@ -24,7 +25,7 @@ class User(db.Model):
     f_name = db.Column(db.String, nullable=False)
     l_name = db.Column(db.String)
     last_login = db.Column(db.DateTime, default=datetime.now)
-    img_path = db.Column(db.String,default='/static/images/profiles/default.png',nullable=False)
+    img_path = db.Column(db.String,default= image_domain+'/static/images/profiles/default.png',nullable=False)
     request_count = db.Column(db.Integer, default=0)
     last_read_book_id = db.Column(db.Integer, db.ForeignKey('books.id'))
     created_datetime = db.Column(db.DateTime, default=datetime.now)
@@ -46,13 +47,11 @@ class User(db.Model):
             'f_name': self.f_name,
             'l_name': self.l_name,
             'last_login': self.last_login.isoformat(),
-            'img_path': base_url_src+self.img_path,
+            'img_path': self.img_path,
             'last_read_book_id': self.last_read_book_id,
             'request_count': self.request_count,
             'created_datetime': self.created_datetime.isoformat(),
         }
-    def set_default_img_path(self):
-        self.img_path = '/static/images/profiles/default.png'
 
 class Book(db.Model):
     __tablename__ = 'books'
@@ -63,8 +62,8 @@ class Book(db.Model):
     rating = db.Column(db.Integer, default=None)
     publication_date = db.Column(db.DateTime)
     isbn = db.Column(db.Integer)
-    img_path = db.Column(db.String, default='/static/images/books/default.png')
-    pdf_path = db.Column(db.String, default='/static/pdfs/default.pdf')
+    img_path = db.Column(db.String, default= image_domain+'/static/images/books/default.png')
+    pdf_path = db.Column(db.String, default= image_domain+'/static/pdfs/default.pdf')
     created_datetime = db.Column(db.DateTime, default=datetime.now)
     # Define relationships
     authors = db.relationship('Author', secondary=book_author_association, backref='books', cascade="all, delete-orphan", single_parent=True)
@@ -80,9 +79,9 @@ class Book(db.Model):
             'page_count': self.page_count,
             'rating': self.rating,
             'publication_date': self.publication_date.isoformat() if self.publication_date else None,
-            'ISBN': self.isbn,
-            'img_path': base_url_src+self.img_path,
-            'pdf_path': base_url_src+self.pdf_path,
+            'isbn': self.isbn,
+            'img_path': self.img_path,
+            'pdf_path': self.pdf_path,
             'created_datetime': self.created_datetime.isoformat(),
         }
     def update_ratings(self):
@@ -94,28 +93,22 @@ class Book(db.Model):
             for rating in ratings:
                 count += rating.rating
             self.rating = total/len(ratings)
-    def set_default_img_path(self):
-        self.img_path = '/static/images/books/default.png'
-    def set_default_pdf_path(self):
-        self.pdf_path = '/static/pdfs/default.pdf'
 
 class Author(db.Model):
     __tablename__ = 'authors'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String, nullable=False)
     description = db.Column(db.String)
-    img_path = db.Column(db.String, default='/static/images/authors/default.png')
+    img_path = db.Column(db.String, default= image_domain+'/static/images/authors/default.png')
     created_datetime = db.Column(db.DateTime, default=datetime.now)
     def to_dict(self):
         return {
             'id': self.id,
             'name': self.name,
             'description': self.description,
-            'img_path': base_url_src+self.img_path,
+            'img_path': self.img_path,
             'created_datetime': self.created_datetime.isoformat(),
         }
-    def set_default_img_path(self):
-        self.img_path = '/static/images/authors/default.png'
 
 class Section(db.Model):
     __tablename__ = 'sections'
@@ -123,7 +116,7 @@ class Section(db.Model):
     name = db.Column(db.String, nullable=False)
     description = db.Column(db.String)
     books_count = db.Column(db.Integer,default=0)
-    img_path = db.Column(db.String, default='/static/images/sections/default.png')
+    img_path = db.Column(db.String, default= image_domain+'/static/images/sections/default.png')
     created_datetime = db.Column(db.DateTime, default=datetime.now)
     def to_dict(self):
         return {
@@ -131,11 +124,9 @@ class Section(db.Model):
             'name': self.name,
             'description': self.description,
             'books_count': self.books_count,
-            'img_path': base_url_src+self.img_path,
+            'img_path': self.img_path,
             'created_datetime': self.created_datetime.isoformat(),
         }
-    def set_default_img_path(self):
-        self.img_path = '/static/images/sections/default.png'
 
 class Request(db.Model):
     __tablename__ = 'book_requests'

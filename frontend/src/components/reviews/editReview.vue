@@ -34,7 +34,7 @@
                         </div>
                     </div>
                 <div class="review-description">
-                    <textarea placeholder="Share details of your own experience about this books"></textarea>
+                    <textarea placeholder="Share details of your own experience about this book"></textarea>
                 </div>
             </div>
             <div class="popup-options">
@@ -47,7 +47,6 @@
     <deletePopup v-if="show_delete_popup" @confirm="delete_post=true; show_delete_popup = false" @cancel="show_delete_popup = false" />
 </template>
 <script>
-import { formUpdateToast, formDeleteToast } from '@/services/toast'
 
 import axiosClient from '@/services/axios'
 

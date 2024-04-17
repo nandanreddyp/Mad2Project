@@ -18,15 +18,16 @@
                     <div class="book-title">{{ book.name }}</div>
                     <div class="book-meta">
                         <span>{{ book.page_count + ' Pages' }}</span>
-                        <span>{{'Published on: '+ formatISODate(book.publication_date) }}</span>
-                        <span>{{'Reviews: ' + book.review}}</span>
+                        <span>{{ book.publication_date !== null ? 'Published on: ' + formatISODate(book.publication_date) : '' }}</span>
+                        <span>{{ book.rating !== null ? 'Reviews: ' + book.rating : 'No ratings' }}</span>
                     </div>
                     <div class="book-authors">
                         Authors: 
                         <router-link v-for="author in authors" :to="{name:'user-author',params:{id:author.id}}">{{ author.name }}</router-link>
                     </div>
                     <div class="book-options">
-                        <button class="blue">Edit</button>
+                        <button @click="toggleEditBook" :book_id="book_id" class="blue">Edit</button>
+                        <editBook v-if="edit_book" :toggleEditBook="toggleEditBook" :LoadBook="LoadBook" :updatedToast="updatedToast"/>
                         <button>Add authors</button>
                         <button>Add to sections</button>
                         <button class="blue" @click="openBook(book.pdf_path)">View book</button>
@@ -52,7 +53,12 @@
 <script>
 import axiosClient from '@/services/axios';
 
+import { toast } from 'vue3-toastify'
+import 'vue3-toastify/dist/index.css'
+
 import reviews from '@/components/reviews/reviews.vue';
+
+import editBook from '@/components/books/editBook.vue';
 import addRequest from '@/components/requests/addRequest.vue';
 import editRequest from '@/components/requests/editRequest.vue';
 
@@ -64,8 +70,11 @@ export default{
         authors: null,
         reviews: ['a','b','c','d','e'],
         reviews_sort: 'newest',
-        review_user: {'img_path':'http://127.0.0.1:5000/static/images/profiles/20240412221958_03dd.png','name':'Nandanreddy'},
+        review_user: null,
         // popup openers
+        edit_book: false,
+        add_authors: false,
+        add_sections: false,
         make_request: false,
         edit_request: false,
     }},
@@ -73,6 +82,9 @@ export default{
         formatISODate(isoDate) {
             const date = new Date(isoDate);
             return date.toLocaleDateString();
+        },
+        toggleEditBook() {
+            this.edit_book = !this.edit_book
         },
         toggleAddRequest() {
             this.make_request = !this.make_request
@@ -83,21 +95,28 @@ export default{
         openBook(url) {
             const newTab = window.open(url, '_blank');
             if (newTab) newTab.focus();
+        },
+        LoadBook() {
+            this.loading = true
+            setTimeout(()=>{
+                axiosClient.get(`/api/books/${this.book_id}`)
+                .then(resp => {
+                    console.log(resp)
+                    this.book = resp.data.book
+                    this.authors = resp.data.authors
+                    this.loading = false
+                })
+            }, 2000)
+        },
+        updatedToast() {
+            toast.success('Updated book',{autoClose: 4000,})
         }
     },
     mounted(){
-        setTimeout(()=>{
-            axiosClient.get(`/api/books/${this.book_id}`)
-            .then(resp => {
-                console.log(resp)
-                this.book = resp.data.book
-                this.authors = resp.data.authors
-                this.loading = false
-            })
-        }, 2000)
+        this.LoadBook()
     },
     components: {
-        addRequest, editRequest, reviews
+        editBook, addRequest, editRequest, reviews
     }
 }
 </script>

@@ -1,7 +1,7 @@
 <template>
     <div class="upload-bar" v-if="user.role==='librarian'">
         <button class="upload-button" @click="toggleAddAuthor">Create New Author</button>
-        <addAuthor v-if="add_author" :toggleAddAuthor="toggleAddAuthor"/>
+        <addAuthor v-if="add_author" :toggleAddAuthor="toggleAddAuthor" :addedToast="addedToast" :reloadPage="makeDefaultPageView"/>
     </div>
     <form @submit.prevent="runSearch" class="collection-header">
         <div class="search">
@@ -10,11 +10,11 @@
         </div>
         <div class="collection-sort">
             Sort by
-            <select v-model="sort" @change="runSearch" name="sort" id="">
-                <option value="newest" :selected="sort === 'newest'" >Recent</option>
-                <option value="oldest" :selected="sort === 'oldest'" >Oldest</option>
-                <option value="asc"    :selected="sort === 'asc'"    >Name (A-Z)</option>
-                <option value="desc"   :selected="sort === 'desc'"   >Name (Z-A)</option>
+            <select title="sort by" v-model="sort" @change="runSearch" name="sort" id="">
+                <option value="" >Recent</option>
+                <option value="oldest" >Oldest</option>
+                <option value="asc"    >Name (A-Z)</option>
+                <option value="desc"   >Name (Z-A)</option>
             </select>
         </div>
     </form>
@@ -26,6 +26,9 @@
 
 <script>
 import axiosClient from '@/services/axios';
+
+import { toast } from 'vue3-toastify'
+import 'vue3-toastify/dist/index.css'
 
 import authorsList from '@/components/authors/authors.vue'
 import addAuthor from '@/components/authors/addAuthor.vue';
@@ -39,8 +42,8 @@ export default {
         has_next: null,
         loading: true,
         // filter
-        query: this.$route.query.query,
-        sort: 'newest',
+        query: this.$route.query.query || "",
+        sort: this.$route.query.sort || "",
         // title
         title: 'Recently added authors',
         // librarian requirements
@@ -52,10 +55,13 @@ export default {
     },
     methods: {
         runSearch(){
-            this.$router.push({name: this.user.role === 'librarian' ? 'librarian-authors' : 'user-authors', query:{query:this.query,sort:this.sort}})
+            this.$router.push(
+                {name: this.user.role === 'librarian' ? 'librarian-authors' : 'user-authors', 
+                query: {...(this.query !== '' && { query: this.query }), ...(this.sort !== '' && { sort: this.sort }),}
+            })
             this.page=1; this.authors=[]; this.has_next = null
             if (this.query) {
-                if (this.sort === 'newest') {
+                if (this.sort === '') {
                     this.title=`Recent authors with search "${this.query}"`
                 } else if (this.sort === 'oldest') {
                     this.title=`Oldest authors with search "${this.query}"`
@@ -65,7 +71,7 @@ export default {
                     this.title=`Authors with search "${this.query}", sorted Z-A`
                 }
             } else {
-                if (this.sort === 'newest') {
+                if (this.sort === '') {
                     this.title='Recently added authors'
                 } else if (this.sort === 'oldest') {
                     this.title='Oldest authors'
@@ -75,12 +81,12 @@ export default {
                     this.title='Authors sorted by Name (Z-A)'
                 }
             }
-            this.loadAuthors(this.page, this.per_page)
+            // this.loadAuthors(this.page, this.per_page)
         },
         loadAuthors(page, per_page) {
             this.loading = true
             setTimeout(()=>{
-                axiosClient.get(`/api/authors?query=${this.query ? this.query : ''}&sort=${this.sort ? this.sort : ''}&page=${page}&per_page=${per_page}`)
+                axiosClient.get(`/api/authors?query=${this.query}&sort=${this.sort || 'newest' }&page=${page}&per_page=${per_page}`)
                 .then(resp => {
                     this.has_next = resp.data.page_data.has_next
                     resp.data.authors.forEach(obj => {
@@ -102,16 +108,33 @@ export default {
         },
         toggleAddAuthor() {
             this.add_author = !this.add_author
+        },
+        addedToast() {
+            toast.success('Added author',{autoClose: 4000,})
+        },
+        showRedirectToasts() {
+            if (this.$route.query.msg) { // for toast messages
+                if (this.$route.query.msg === 'deleted') {
+                toast.error('Deleted author',{autoClose: 4000,})
+                }
+            }
+        },
+        makeDefaultPageView() {
+            this.sort=''; this.query=''; this.page=1; this.has_next=null; this.authors = []; this.title = 'Recently added authors';
+            this.loadAuthors(this.page, this.per_page)
         }
     },
     mounted(){
-        this.runSearch()
+        this.showRedirectToasts()
+        this.makeDefaultPageView()
     },
     watch: {
         $route(to, from) {
-            if (to.fullPath === '/authors?sort=newest' || to.fullPath === '/librarian/authors?sort=newest') {
-                this.sort = 'newest'
-                this.runSearch()
+            this.showRedirectToasts()
+            if (to.fullPath === '/authors' || to.fullPath === '/librarian/authors') { // for sidebar click
+                this.makeDefaultPageView()
+            } else {
+                this.loadAuthors(this.page, this.per_page)
             }
         }
     },

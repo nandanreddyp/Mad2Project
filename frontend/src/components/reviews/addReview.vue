@@ -34,7 +34,7 @@
                         </div>
                     </div>
                 <div class="review-description">
-                    <textarea placeholder="Share details of your own experience about this books"></textarea>
+                    <textarea placeholder="Share details of your own experience about this book"></textarea>
                 </div>
             </div>
             <div class="popup-options">

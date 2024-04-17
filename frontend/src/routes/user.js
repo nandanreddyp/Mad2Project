@@ -44,12 +44,12 @@ export default [
                 name: 'user-author',
                 component: () => import("@/views/librarian/authors/author.vue")
             },
-            {
-                path: 'test',
-                name: 'user-test',
-                component: () => import("@/views/test.vue")
-            }
         ]
+    },
+    {
+        path: '/:pathMatch(.*)*',
+        name: 'not-found',
+        component: () => import("@/views/NotFound.vue")
     }
 ]
     

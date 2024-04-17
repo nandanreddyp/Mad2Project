@@ -48,10 +48,10 @@ def monthly_report_mail(email,name):
     template = render_template('monthly_report.html',name=name)
     send_email(email,'Personalized monthly report from E-Libri',template)
 
-from run import app
-with app.app_context():
-    email = 'jivrajsinghs123@gmail.com'
-    welcome_mail(email,'NandanReddy')
-    book_issued_mail(email,'NandanReddy','100 ways to die')
-    remind_visit_mail(email,'NandanReddy')
-    monthly_report_mail(email,'NandanReddy')
+# from run import app
+# with app.app_context():
+#     email = 'jivrajsinghs123@gmail.com'
+#     welcome_mail(email,'NandanReddy')
+#     book_issued_mail(email,'NandanReddy','100 ways to die')
+#     remind_visit_mail(email,'NandanReddy')
+#     monthly_report_mail(email,'NandanReddy')

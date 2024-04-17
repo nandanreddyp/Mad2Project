@@ -20,8 +20,7 @@ export default {
     data() {
         return {
             FormData: {
-                // email: this.$store.state.user.email , password: 'passkey123'
-                email: "", password: ""
+                email: this.$store.state.user.email , password: '',
             },
             response: ''
         }

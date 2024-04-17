@@ -7,42 +7,40 @@ from resources import api
 from database import db, Author, Book, book_author_association
 from .rbac import access_for
 
+from.fileHandle import authorImage
 
 
-class AuthorResource(Resource): #✅
+
+class AuthorResource(Resource): #final
     @jwt_required()
     def __init__(self):
         pass
     def get(self, author_id=None):
         if author_id:
             author = Author.query.get(author_id)
-            if author: return author.to_dict()
+            if author: return {'author':author.to_dict()}, 200
             return {'msg':'Author Not Found'}, 404
         # BUILDING QUERY
         result = Author.query
-        query = request.args.get('query','').strip()
-        filter = request.args.get('filter','').strip()
+        query = request.args.get('query','')
+        sort = request.args.get('sort','')
         # APPLYING QUERY
-        if query: 
-            msg = f"Showing results for '{query}'"
+        if query:
             result = result.filter(Author.name.ilike('%'+query.lower()+'%'))
         # APPLYING FILTER
-        if filter :
-            if query: msg+=', with filter applied'
-            else: msg = 'Applied filter'
-            sort = request.args.get('sort')
+        if sort:
             if sort == 'newest':
                 result = result.order_by(Author.created_datetime.desc())
-            if sort == 'oldest':
+            elif sort == 'oldest':
                 result = result.order_by(Author.created_datetime.asc())
-            if sort == 'alpha-asc':
+            elif sort == 'asc':
                 result = result.order_by(Author.name.asc())
-            if sort == 'alpha-desc':
+            elif sort == 'desc':
                 result = result.order_by(Author.name.desc())
         # DEFAULT FILTER
-        if not query and not filter:
-            msg = 'Recently added Authors'
-            result = result.order_by(Author.created_datetime.desc()) # default soring
+        if not query and not sort:
+            result = result.order_by(Author.created_datetime.desc()) # default sorting
+        msg = 'Successfully fetced Authors'
         page = request.args.get('page',1,type=int); per_page = request.args.get('per_page',3,type=int)
         pagination = result.paginate(page=page, per_page=per_page)
         page_data = {'current_page': pagination.page,'next_page': pagination.next_num,'has_next': pagination.has_next,'has_prev': pagination.has_prev,'per_page': pagination.per_page,'current_page_count': len(pagination.items),'total_items':pagination.total}
@@ -52,16 +50,16 @@ class AuthorResource(Resource): #✅
     @access_for(['librarian'])
     def post(self, author_id=None): #admin
         if author_id: return {'msg':"Can't post with id"}, 400
-        if not request.is_json: return {'msg':'Missing JSON in request'}, 400
-        data = request.json
-        if not data: return {'msg':'No data provided'}, 400
+        data = request.form; files = request.files
         try:
-            name = data.get('name','').strip() or None
+            name = data.get('name') or None
             if not name: raise ValueError('Name can not be empty')
-            description = data.get('description','').strip() or None
-            img_path = data.get('img_path','').strip() or None
+            description = data.get('description') or None
         except ValueError as e: return {'msg':str(e)}, 400
         except: return {'msg':'Make sure all fileds are given and they are in correct format.'}, 400
+        img_file = files.get('image_file')
+        if img_file: img_path = authorImage().save(img_file)
+        else: img_path = None
         author = Author(
             name = name, description = description, img_path = img_path
         )
@@ -69,67 +67,56 @@ class AuthorResource(Resource): #✅
         db.session.commit()
         return {'msg':f"Author created",'id':author.id}, 200
     @access_for(['librarian'])
-    def put(self, author_id): #admin
-        if not request.is_json: return {'msg':'Missing JSON in request'}, 400
-        data = request.json; author = Author.query.get(author_id)
-        if not data: return {'msg':'No data provided'}, 400
+    def put(self, author_id=None):
+        if not author_id: return {'msg':'Author id is required'}, 400
+        author = Author.query.get(author_id)
         if not author: return {'msg':f'Author not found'}, 404
+        data = request.form; files = request.files
         try:
-            name = data.get('name','').strip() or None; 
+            name = data.get('name') or None; 
             if not name: raise ValueError("Name can't be empty")
-            description = data.get('description','').strip() or None; 
-            img_path = data.get('img_path','').strip() or None
+            description = data.get('description') or None
         except ValueError as e: return {'msg':str(e)}, 400
         except: return {'msg':'Make sure all fileds are given and they are in correct format.'}, 400
-        if name :
-            author.name = name
-            author.description = description
-            if img_path: author.img_path = img_path
-            else:        author.set_default_img_path()
-            db.session.commit()
-            return {'msg':f'Author updated','id':author_id}, 200
-        return {'msg':"Name of author can't be empty"},400
+        img_file = files.get('image_file')
+        if img_file: img_path = authorImage().update(author.img_path,img_file)
+        else: img_path = None
+        # update values
+        author.name = name
+        author.description = description
+        if img_path: author.img_path = img_path
+        db.session.commit()
+        return {'msg':f'Author updated','id':author_id}, 200
     @access_for(['librarian'])
-    def delete(self, author_id): #admin
+    def delete(self, author_id):
         author = Author.query.get(author_id)
-        if author:
-            db.session.delete(author)
-            db.session.commit()
-            return {'msg':f'Deleted author'}, 200
-        return {'msg':f'Author not found'}, 404
+        if not author: return {'msg':'Author not found'}, 404
+        authorImage().delete(author.img_path)
+        db.session.delete(author)
+        db.session.commit()
+        return {'msg':f'Deleted author'}, 200
 api.add_resource(AuthorResource,
                  '/api/authors',
                  '/api/authors/<int:author_id>')
 
-class AuthorBook(Resource): #✅
+
+class AuthorBook(Resource): # show books of author
+    @jwt_required()
     def __init__(self):
         pass
     def get(self, author_id, book_id=None):
         author = Author.query.get(author_id); 
         if not author: return {'msg':f"Author not found"}, 404
-        if book_id: # check if association exists
-            book = Book.query.get(book_id)
-            if not book: return {'msg':f"book not found"}, 404
-            is_associated = db.session.query(
-                exists().where(and_(
-                    book_author_association.c.author_id == author_id,
-                    book_author_association.c.book_id == book_id,
-                ))).scalar()
-            if is_associated: return {'msg':"Association Found",'is_associated':True}, 200
-            return {'msg':f"Assocaitaion Not Found",'is_associated':False}, 404
+        if book_id: return {'msg':'not required book id'}, 400
         # BUILDING QUERY
         result = Book.query.join(book_author_association).filter(book_author_association.c.author_id == author_id)
         # APPLYING QUERY
         query = request.args.get('query')
-        filter = request.args.get('filter')
+        sort = request.args.get('sort')
         if query:
-            msg = f"Showing results for '{query}'"
             result = result.filter(Book.name.ilike('%'+query.lower()+'%'))
         # APPLYING FILTER
-        if filter:
-            if query: msg+=', with filter applied'
-            else: msg = 'Applied filter'
-            sort = request.args.get('sort')
+        if sort:
             if sort == 'oldest':
                 result = result.order_by(Book.created_datetime.asc())
             if sort == 'newest':
@@ -139,15 +126,62 @@ class AuthorBook(Resource): #✅
             if sort == 'alpha-desc':
                 result = result.order_by(Book.name.desc())
         # DEFAULT FILTER
-        if not query and not filter:
+        if not query and not sort:
             msg = f'Recent book'
             result.order_by(Book.created_datetime.desc()) # apply default sorting
         # Pagination parameters
+        msg = 'fetched author books'
         page = request.args.get('page',1,type=int); per_page = request.args.get('per_page',3,type=int)
         pagination = result.paginate(page=page, per_page=per_page)
         page_data = {'current_page': pagination.page,'next_page': pagination.next_num,'has_next': pagination.has_next,'has_prev': pagination.has_prev,'per_page': pagination.per_page,'current_page_count': len(pagination.items),'total_items':pagination.total}
         books = [book.to_dict() for book in pagination.items]
         # RESULTS
+        results = {'msg':msg,'page_data':page_data,'books':books}
+        return results, 200
+api.add_resource(AuthorBook,
+                 '/api/authors/<int:author_id>/books',)
+
+
+class AuthorAddBooks(Resource):
+    @jwt_required()
+    def __init__(self):
+        pass
+    @access_for(['librarian'])
+    def get(self, author_id):
+        author = Author.query.get(author_id)
+        if not author: return {'msg':'Author Not Found'}, 404
+        # building query
+        result = Book.query
+        query = request.args.get('query')
+        sort = request.args.get('sort')
+        # APPLYING QUERY
+        if query:
+            result = result.filter(Book.name.ilike('%'+query.lower()+'%'))
+        # APPLYING FILTER
+        if sort:
+            if sort == 'newest':
+                result = result.order_by(Book.created_datetime.desc())
+            elif sort == 'oldest':
+                result = result.order_by(Book.created_datetime.asc())
+            elif sort == 'asc':
+                result = result.order_by(Book.name.asc())
+            elif sort == 'desc':
+                result = result.order_by(Book.name.desc())
+        # DEFAULT FILTER
+        if not query and not sort:
+            result = result.order_by(Book.created_datetime.desc()) # default sorting
+        msg = 'Successfully fetced books with or without association to author'
+        page = request.args.get('page',1,type=int); per_page = request.args.get('per_page',3,type=int)
+        pagination = result.paginate(page=page, per_page=per_page)
+        page_data = {'current_page': pagination.page,'next_page': pagination.next_num,'has_next': pagination.has_next,'has_prev': pagination.has_prev,'per_page': pagination.per_page,'current_page_count': len(pagination.items),'total_items':pagination.total}
+        books = [book.to_dict() for book in pagination.items]
+        for book in books:
+            is_associated = db.session.query(
+                exists().where(and_(
+                    book_author_association.c.author_id == author_id,
+                    book_author_association.c.book_id == book['id'],
+                ))).scalar()
+            book['is_associated'] = is_associated
         results = {'msg':msg,'page_data':page_data,'books':books}
         return results, 200
     @access_for(['librarian'])
@@ -182,6 +216,7 @@ class AuthorBook(Resource): #✅
         )
         db.session.execute(association); db.session.commit()
         return {'msg': f"Book dissociated from Author"}, 200
-api.add_resource(AuthorBook,
-                 '/api/authors/<int:author_id>/books',
-                 '/api/authors/<int:author_id>/books/<int:book_id>')
+    
+api.add_resource(AuthorAddBooks,
+                 '/api/authors/<int:author_id>/add/books',
+                 '/api/authors/<int:author_id>/add/books/<int:book_id>')

@@ -3,13 +3,26 @@
         <div class="popup">
             <div class="popup-header">Create Author</div>
             <div class="body">
+                <form ref="myForm" id="author-form">
 
-                <div class="author-description">
-                    <textarea placeholder="Share details of your own experience about this authors"></textarea>
-                </div>
+                    <label for="name">Author Name</label>
+                    <input ref="name" type="text" id="name" name="name" required><br><br>
+
+                    <div class="author-description">
+                        <label for="description">Description</label>
+                        <textarea ref="description" id="description" name="description" placeholder="Description about this author"></textarea>
+                    </div><br>
+
+                    <label for="img_file">Cover Image</label>
+                    <div style="display: flex; justify-content: center; margin-bottom: 6px;">
+                        <img id="selectedImgPreview" class="" src="" alt=""> <!--add visible class to show-->
+                    </div>
+                    <input @change="showSelectedImage" ref="IMG" type="file" id="img_file"  accept="image/*"><br><br>
+
+                </form>
             </div>
             <div class="popup-options">
-                <button class="ok">Submit</button>
+                <button class="ok" @click="checkForm" >Submit</button>
                 <button class="cancel" @click="toggleAddAuthor">Cancel</button>
             </div>
         </div>
@@ -22,20 +35,51 @@ import axiosClient from '@/services/axios'
 export default {
     data() {return {
         formdata: {
-            rating: '',
+            name: '',
             description: '',
+            image: null,
         }
     }},
     methods:{
-        uploadReview(){
-            axiosClient.post(`/api/reviews`)
-            .then(resp=>{
-
+        showSelectedImage() {
+            const image_file = document.getElementById("img_file");
+            const image_file_preview = document.getElementById("selectedImgPreview");
+            const files = image_file.files[0];
+            if (files) {
+                image_file_preview.classList.add('visible')
+                const fileReader = new FileReader();
+                fileReader.readAsDataURL(files);
+                fileReader.addEventListener("load", function () {
+                image_file_preview.src = this.result
+                });    
+            } else {
+                image_file_preview.classList.remove('visible')
+                image_file_preview.src = ''
+            }
+        },
+        checkForm(){
+            if (this.$refs.myForm.reportValidity()) {
+                this.formdata.name = this.$refs.name.value
+                this.formdata.description = this.$refs.description.value
+                this.formdata.image_file = this.$refs.IMG.files[0]
+                this.submitForm()
+            }
+        },
+        submitForm() {
+            axiosClient.post('/api/authors',this.formdata,{
+                headers:{
+                    'Content-Type': 'multipart/form-data',
+                }
             })
-        }
+            .then(resp => {
+                this.toggleAddAuthor()
+                this.addedToast()
+                this.reloadPage()
+            })
+        },
     },
     props: {
-        toggleAddAuthor: Function, 
+        toggleAddAuthor: Function, addedToast: Function, reloadPage: Function,
     }
 }
 </script>
@@ -84,6 +128,7 @@ export default {
     white-space: nowrap; /* Prevents wrapping of text */
     text-overflow: ellipsis; /* Add ellipsis for overflowed text */
     margin: 0px auto; /* Center the text horizontally */
+    margin-bottom: 5px;
     text-align: center;
 }
 
@@ -122,10 +167,47 @@ div.body {
     font-weight: 400;
 }
 
+/* form css */
+#author-form {
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="file"],
+input[type="date"],
+textarea {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+/* selected image */
+#selectedImgPreview.visible {
+    display: unset;
+    width: 100px; background-color: black; height: 150px;
+    object-fit: cover;
+}
+#selectedImgPreview {
+    display: none;
+}
+
+
 
 /* footer */
 .popup-options {
-    width: 100%; /* Occupy full width of the popup */
+    width: 100%; margin-top: 5px;
     display: flex; justify-content: space-evenly;
 }
 .popup-options button {

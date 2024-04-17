@@ -2,81 +2,63 @@
     <div class="popup">
         <h1>Create account to read</h1>
         <p>Create a account to read on any device at any time</p>
-        <!-- <span>{{ JSON.stringify(FormData) }}</span> -->
         <form class="bar" @submit.prevent="submitForm">
             <label for="email">Email <span class="required">*</span></label>
-            <input type="email" required id="email" placeholder="Email" v-model="FormData.email">
+            <input type="email" required id="email" placeholder="Email" v-model="formdata.email">
             <br>
-            <label for="f_name">First name <span class="required">*</span></label>
-            <input type="text" required id="f_name" v-model="FormData.f_name">
+            <label for="f_name">First Name <span class="required">*</span></label>
+            <input type="text" required id="f_name" placeholder="First Name" v-model="formdata.f_name">
             <br>
-            <label for="l_name">Last name</label>
-            <input type="text" id="l_name" v-model="FormData.l_name">
+            <label for="l_name">Last Name</label>
+            <input type="text" id="l_name" placeholder="Last Name" v-model="formdata.l_name">
             <br>
             <label for="password">Password <span class="required">*</span></label>
-            <input type="password" required id="password" placeholder="Password" v-model="FormData.password">
+            <input type="password" required id="password" placeholder="Password" v-model="formdata.password">
             <br>
-            <label for="re-password">Re-enter password <span class="required">*</span></label>
-            <input type="password" required id="re-password" placeholder="Re-enter password" v-model="FormData.password1" @blur="checkPasswords">
+            <label for="re-password">Re-enter Password <span class="required">*</span></label>
+            <input type="password" required id="re-password" placeholder="Re-enter password" v-model="formdata.password1" @blur="checkPasswords">
             <br>
-            <label for="dob">Date of birth <span class="required">*</span></label>
-            <input type="date" required id="dob" placeholder="Date of borth" v-model="FormData.dob">
+            <label for="dob">Date Of Birth <span class="required">*</span></label>
+            <input type="date" required id="dob" placeholder="Date of borth" v-model="formdata.dob">
             <br>
-            <div class="profile-upload">
-                <img class="profile-upload-view" :src="uploadImageUrl" alt="">
-                <div class="profile-upload-upload">
-                    <label for="profile_pic">Profile picture</label>
-                    <input class="fileInputElement" @change="uploadImage" type="file" id="profile_pic" accept="image/*">
-                </div>                
-            </div>
+            <label for="profile_pic">Profile Picture</label>
+            <input class="fileInputElement" type="file" id="profile_pic" accept="image/*" ref="img_file" @change="handleFileChange">
             <br>
-            <button>Enter</button>
+            <button type="submit">Enter</button>
         </form>
         <p class="alert" v-if="response">{{ response }}</p>        
     </div>
-
 </template>
 
 <script>
 import { register } from '@/services/auth'
-import { upload, getUrl } from '@/services/fileHandle'
-import axiosClient from '@/services/axios';
 
 export default {
     data() {
         return {
-            FormData: {email: this.$store.state.user.email, f_name:"", l_name:"", password:"", password1:"", dob:"", 'image-id':"" },
-            uploadImageUrl: '',
+            formdata: {email: this.$store.state.user.email, f_name:"User", l_name:"", password:"12345678", password1:"12345678", dob:"2004-04-09", img_file:"" },
             response: ''
         }
     },
     methods: {
-        async uploadImage(event) {
-            const file = event.target.files[0]
-            this.FormData['image-id'] = await upload('profile-image',file,)
-            this.uploadImageUrl = this.FormData['image-id']
-        },
-        async submitForm() {
-            if (this.FormData.email && this.checkPasswords() && this.FormData.f_name && this.FormData.dob) {
-                register.call(this,this.FormData)
-            } else {
-                this.response = 'Please fill details'
-            }
+        submitForm() {
+            register.call(this,this.formdata)
         },
         checkPasswords() {
-            if (this.FormData.password != '' && this.FormData.password != this.FormData.password1) {
+            if (this.formdata.password != '' && this.formdata.password != this.formdata.password1) {
                 this.response = 'Re-entered passwords not matching'
                 return 0
             } else {
                 this.response = ''
                 return 1
             }
+        },
+        handleFileChange(event) {
+            this.formdata.img_file = event.target.files[0]
         }
     },
-    async mounted() {
-        var response
-        response =   await getUrl('profile-image','/static/images/profiles/default.png')
-        this.uploadImageUrl = response['url']
+    mounted() {
+
     },
     components: {
         
@@ -123,17 +105,5 @@ span.required {
     text-align: center; margin-top: 20px;
 }
 
-.profile-upload {
-    display: flex; border: 1px solid black;
-    border-radius: 10px;
-}
-img.profile-upload-view {
-    aspect-ratio: 1/1;
-    width: 150px; padding: 10px;
-    object-fit: cover;
-}
-.profile-upload-upload {
-    display: flex; flex-direction: column; justify-content: center;
-    padding-right: 10px; width: auto;
-}
+
 </style>

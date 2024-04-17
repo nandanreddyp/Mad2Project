@@ -37,16 +37,3 @@ def get_unique_filename(filename):
     unique_filename = f"{timestamp}_{random_string}{ext}"
     return unique_filename
 
-def count_pdf_pages(pdf_path):
-    import PyPDF2
-    with open(pdf_path, 'rb') as file:
-        pdf_reader = PyPDF2.PdfReader(file)
-        num_pages = len(pdf_reader.pages)
-    return num_pages
-
-def extract_first_page_as_png(pdf_path, output_path):
-    import pypdfium2 as pdfium
-    pdf = pdfium.PdfDocument(pdf_path)
-    page = pdf[0]
-    image = page.render(scale=4).to_pil()
-    image.save(output_path)

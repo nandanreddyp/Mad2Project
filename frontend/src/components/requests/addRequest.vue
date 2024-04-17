@@ -24,7 +24,6 @@
 </template>
 
 <script>
-import { formSubmitToast } from '@/services/toast'
 
 import axiosClient from '@/services/axios'
 
@@ -47,7 +46,7 @@ export default {
             })
         },
         submitForm(){
-            formSubmitToast()
+            
         }
     },
     props: {

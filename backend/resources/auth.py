@@ -7,27 +7,27 @@ import random
 from resources import api, BLOCKLIST
 from database import db, User        
 
+from .fileHandle import profileImage
 
 
 class Login(Resource):
     def get(self):
-        email = request.args.get('email','').strip() or None
-        if email:
-            user = User.query.filter_by(email=email).first()
-            if user: return {'msg':'Found'}, 200
-        return {'msg':'Not found'}, 404
+        email = request.args.get('email')
+        if not email: return {'msg':'Not found'}, 400
+        user = User.query.filter_by(email=email).first()
+        if user: return {'found':True}, 200
+        return {'found':False}, 200
     def post(self):
         if not request.is_json: return {'msg':'Missing JSON in request'}, 400
         data = request.json
         if not data: return {'msg':'No data provided'}, 400
         try:
             reqData = {
-                'email': data.get('email','').strip() or None,
-                'password': data.get('password','').strip() or None,
+                'email': data.get('email'),
+                'password': data.get('password'),
             }
         except: return {'msg':'Error in given data format.'}, 400
-        if reqData['email'] and reqData['password']: 
-            print(reqData['email'])
+        if reqData['email'] and reqData['password']:
             user = User.query.filter_by(email=reqData['email']).first()
             if user and user.verify_password(reqData['password']):
                 from datetime import datetime
@@ -35,32 +35,30 @@ class Login(Resource):
                 db.session.commit()
                 access_token = create_access_token(identity=user.email, expires_delta=timedelta(hours=6))
                 return {'msg':'Logged in, successfully!','access_token':access_token, 'user':user.to_dict()}, 200
-            return {'msg':'Incorrect email or password.'}, 404
+            return {'msg':'Incorrect email or password.'}, 200
         return {'msg':'Provide all required fields and check format!'}, 400
 api.add_resource(Login,'/api/auth/login')
 
 class Register(Resource):
     def post(self):
-        if not request.is_json: return {'msg':'Missing JSON in request'}, 400
-        data = request.json
-        if not data: return {'msg':'No data provided'}, 400
-        try:
-            reqData = {
-                'email': data.get('email','').strip() or None,
-                'f_name': data.get('f_name','').strip() or None,
-                'l_name': data.get('l_name','').strip() or None,
-                'img_path': data.get('img_path','').strip() or None,
-            }
-            password = data.get('password','').strip() or None
-        except: return {'msg':'Error in given data format.'}, 400
-        if reqData['email'] and reqData['f_name'] and password:
-            if not User.query.filter_by(email=reqData['email']).first():
-                user = User(**reqData)
-                user.hash_password(password)
-                db.session.add(user); db.session.commit()
-                return {'msg':'Account created, successfully!'}, 200
-            return {'msg':'Account already exists'}, 409
-        return {'msg':'Provide all required fields.'}, 400
+        data = request.form; files = request.files
+        if not data : return {'msg':'No data provided'}, 400
+        reqData = {
+            'email': data.get('email'),
+            'f_name': data.get('f_name'),
+            'l_name': data.get('l_name'),
+        }
+        if User.query.filter_by(email=reqData['email']).first():
+            return {'exists':True}, 200
+        user = User(**reqData)
+        password = data.get('password')
+        user.hash_password(password)
+        img_file = files.get('img_file')
+        if img_file: 
+            img_path = profileImage().save(img_file)
+            user.img_path = img_path
+        db.session.add(user); db.session.commit()
+        return {'exists':False}, 200
 api.add_resource(Register,'/api/auth/register')
 
 class Logout(Resource): # jwt required

@@ -6,13 +6,8 @@
                     <img class="author-list-logo" :src="author.img_path" alt="">
                     <div class="author-list-details">
                         <h2>{{author.name}}</h2>
-                        <div class="author-meta">
-                            <span>{{ author.page_count + ' Pages' }}</span>
-                            <span>{{'Published on: '+ formatISODate(author.publication_date) }}</span>
-                            <span>{{'Ratings: ' + author.rating}}</span>
-                        </div>
                         {{author.description}}
-                    </div>            
+                    </div>
             </div>
         </router-link>
         <div class="author-list-item-skeleton" v-if="loading" v-for="n in 3" :key="n"> <!--content skeleton-->

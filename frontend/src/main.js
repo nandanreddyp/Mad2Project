@@ -13,15 +13,16 @@ router.beforeEach((to, from, next) => {
     const hasToken = store.state.isAuthenticated;
     if (to.meta.requiresAuth) {
         const roles = to.meta.role || []
-        if (!hasToken) {
-            return next('/in')
-        } else if (roles.includes(store.state.user.role)) {
+        if (!hasToken) { // unauthenticated
+            if (to.fullPath !== '/') { return next({name:'welcome',query:{login:false}}) } // if not coming from main route then warn
+            else { return next({name:"welcome"}) } // since coming from main route, just welcome to register
+        } else if (roles.includes(store.state.user.role)) { // authorized continue
             return next()
-        } else {
+        } else { // unauthorized redirecting to their homes
             if (store.state.user.role === 'librarian') {
-                return next('/librarian')
+                return next({name:'librarian-home'})
             } else {
-                return next('/')
+                return next({name:'user-home',query:{msg:'access denied'}})
             }
         }
     } else {

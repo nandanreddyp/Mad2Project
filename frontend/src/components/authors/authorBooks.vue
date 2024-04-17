@@ -27,7 +27,7 @@ import booksList from '@/components/books/books.vue'
 
 export default {
     data(){return {
-        section_id: this.$route.params.id,
+        author_id: this.$route.params.id,
         // loading data
         books: [],
         page: 1,
@@ -72,7 +72,7 @@ export default {
         loadBooks(page, per_page) {
             this.loading = true
             setTimeout(()=>{
-                axiosClient.get(`/api/sections/${this.section_id}/books?query=${this.query ? this.query : ''}&sort=${this.sort ? this.sort : ''}&page=${page}&per_page=${per_page}`)
+                axiosClient.get(`/api/authors/${this.author_id}/books?query=${this.query ? this.query : ''}&sort=${this.sort ? this.sort : ''}&page=${page}&per_page=${per_page}`)
                 .then(resp => {
                     this.has_next = resp.data.page_data.has_next
                     resp.data.books.forEach(obj => {

@@ -1,7 +1,7 @@
 <template>
     <div class="upload-bar" v-if="user.role==='librarian'">
         <button class="upload-button" @click="toggleAddBook">Create New Book</button>
-        <addBook v-if="add_book" :toggleAddBook="toggleAddBook"/>
+        <addBook v-if="add_book" :toggleAddBook="toggleAddBook" :addedToast="addedToast" :reloadPage="makeDefaultPageView"/>
     </div>
     <form @submit.prevent="runSearch" class="collection-header">
         <div class="search">
@@ -10,11 +10,11 @@
         </div>
         <div class="collection-sort">
             Sort by
-            <select v-model="sort" @change="runSearch" name="sort" id="">
-                <option value="newest" :selected="sort === 'newest'" >Recent</option>
-                <option value="oldest" :selected="sort === 'oldest'" >Oldest</option>
-                <option value="asc"    :selected="sort === 'asc'"    >Name (A-Z)</option>
-                <option value="desc"   :selected="sort === 'desc'"   >Name (Z-A)</option>
+            <select title="sort by" v-model="sort" @change="runSearch" name="sort" id="">
+                <option value="" >Recent</option>
+                <option value="oldest" >Oldest</option>
+                <option value="asc"    >Name (A-Z)</option>
+                <option value="desc"   >Name (Z-A)</option>
             </select>
         </div>
     </form>
@@ -26,6 +26,9 @@
 
 <script>
 import axiosClient from '@/services/axios';
+
+import { toast } from 'vue3-toastify'
+import 'vue3-toastify/dist/index.css'
 
 import booksList from '@/components/books/books.vue'
 import addBook from '@/components/books/addBook.vue';
@@ -39,8 +42,8 @@ export default {
         has_next: null,
         loading: true,
         // filter
-        query: this.$route.query.query,
-        sort: 'newest',
+        query: this.$route.query.query || "",
+        sort: this.$route.query.sort || "",
         // title
         title: 'Recently added books',
         // librarian requirements
@@ -52,10 +55,13 @@ export default {
     },
     methods: {
         runSearch(){
-            this.$router.push({name: this.user.role === 'librarian' ? 'librarian-books' : 'user-books', query:{query:this.query,sort:this.sort}})
+            this.$router.push(
+                {name: this.user.role === 'librarian' ? 'librarian-books' : 'user-books', 
+                query: {...(this.query !== '' && { query: this.query }), ...(this.sort !== '' && { sort: this.sort }),}
+            })
             this.page=1; this.books=[]; this.has_next = null
             if (this.query) {
-                if (this.sort === 'newest') {
+                if (this.sort === '') {
                     this.title=`Recent books with search "${this.query}"`
                 } else if (this.sort === 'oldest') {
                     this.title=`Oldest books with search "${this.query}"`
@@ -65,7 +71,7 @@ export default {
                     this.title=`Books with search "${this.query}", sorted Z-A`
                 }
             } else {
-                if (this.sort === 'newest') {
+                if (this.sort === '') {
                     this.title='Recently added books'
                 } else if (this.sort === 'oldest') {
                     this.title='Oldest books'
@@ -75,12 +81,12 @@ export default {
                     this.title='Books sorted by Name (Z-A)'
                 }
             }
-            this.loadBooks(this.page, this.per_page)
+            // this.loadBooks(this.page, this.per_page)
         },
         loadBooks(page, per_page) {
             this.loading = true
             setTimeout(()=>{
-                axiosClient.get(`/api/books?query=${this.query ? this.query : ''}&sort=${this.sort ? this.sort : ''}&page=${page}&per_page=${per_page}`)
+                axiosClient.get(`/api/books?query=${this.query}&sort=${this.sort || 'newest' }&page=${page}&per_page=${per_page}`)
                 .then(resp => {
                     this.has_next = resp.data.page_data.has_next
                     resp.data.books.forEach(obj => {
@@ -102,16 +108,33 @@ export default {
         },
         toggleAddBook() {
             this.add_book = !this.add_book
+        },
+        addedToast() {
+            toast.success('Added book',{autoClose: 4000,})
+        },
+        showRedirectToasts() {
+            if (this.$route.query.msg) { // for toast messages
+                if (this.$route.query.msg === 'deleted') {
+                toast.error('Deleted book',{autoClose: 4000,})
+                }
+            }
+        },
+        makeDefaultPageView() {
+            this.sort=''; this.query=''; this.page=1; this.has_next=null; this.books = []; this.title = 'Recently added books';
+            this.loadBooks(this.page, this.per_page)
         }
     },
     mounted(){
-        this.runSearch()
+        this.showRedirectToasts()
+        this.makeDefaultPageView()
     },
     watch: {
         $route(to, from) {
-            if (to.fullPath === '/books?sort=newest' || to.fullPath === '/librarian/books?sort=newest') {
-                this.sort = 'newest'
-                this.runSearch()
+            this.showRedirectToasts()
+            if (to.fullPath === '/books' || to.fullPath === '/librarian/books') { // for sidebar click
+                this.makeDefaultPageView()
+            } else {
+                this.loadBooks(this.page, this.per_page)
             }
         }
     },

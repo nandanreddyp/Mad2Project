@@ -1,41 +1,34 @@
 import axiosClient from "./axios";
 
-import { loginToContinueToast } from "@/services/toast.js"
-
-export function checkUser(form) {
-    axiosClient.get('/api/auth/login?email='+form.email)
+export function checkUser(formdata) {
+    axiosClient.get('/api/auth/login?email='+formdata.email)
     .then(resp => {
-      this.$router.push('/login')
-    }).catch(err => {
-        if (err.response) {
-            this.$store.commit('setUser',{email:form.email})
-            this.$store.state.isAuthenticated = false
-            if (err.response.status === 404) {
-                return this.$router.push('/register')
-            }
-        }
-    })
-}
-
-export function register(form) {
-    axiosClient.post('/api/auth/register',form)
-    .then(resp => {
-      if (resp.status == 200 ) {
-        this.$store.commit('setUser',{email : form.email})
-        this.$router.push('/login')
-      }
-    }).catch(error => {
-      if (error.response) { // request was made but server had error
-        if (error.response.status === 409) {
-          this.$store.commit('setUser',{email : form.email})
-          this.$router.push('/login')
-        }
+      this.$store.commit('setUser',{email:formdata.email})
+      if (resp.data.found) {
+        this.$router.push({name:'login',query:{found:true}})
       } else {
-        this.response = 'Fill required details'
+        this.$router.push({name:'register',query:{found:false}})
       }
-    })
+    }).catch(err => { console.log(err) })
 }
 
+export function register(formdata) {
+    axiosClient.post('/api/auth/register',formdata,{
+      headers:{'Content-Type': 'multipart/form-data',}
+    })
+    .then(resp => {
+      this.$store.commit('setUser',{email : formdata.email})
+      if (resp.data.exists) {
+        this.$router.push({name:'login',query:{exists:true}})
+      } else {
+        // created login
+        this.$router.push({name:'login',query:{exists:false}})
+      }
+    }).catch(err => { console.log(err) })
+}
+
+
+import { toast } from 'vue3-toastify'
 export function logIn(form) {
     axiosClient.post('/api/auth/login',form)
     .then(resp => {
@@ -43,23 +36,16 @@ export function logIn(form) {
           this.$store.commit('setUser',resp.data.user)
           this.$store.commit('setAuthentication',true)
           localStorage.setItem('access_token', resp.data.access_token);
-        if (resp.data.user.role === 'librarian') {
-          this.$router.push('/librarian')
+          if (resp.data.user.role === 'librarian') {
+            this.$router.push({name:'librarian-home',query:{login:'success'}})
+          } else {
+            this.$router.push({name:'user-home',query:{login:'success'}})
+          }
         } else {
-          this.$router.push('/')
+          toast.error('Incorrect email or password!')
+          this.response = 'Incorrect password or email'
         }
-        }
-    }).catch(error => {
-        if (error.response) { 
-        if (error.response.status === 404) {
-            this.response = 'Check email or password'
-        }
-        } else if (error.request) {
-        ;
-        } else {
-        ;
-        }
-    })
+    }).catch(err => { console.log(err) })
 }
 
 export function logOut() {
@@ -68,15 +54,9 @@ export function logOut() {
       if (resp.status == 200) {
         this.$store.commit('removeUser')
         localStorage.removeItem('access_token');
-        this.$router.push('/in')
+        this.$router.push({name:'welcome',query:{logout:true}})
       }
     }).catch(error => {
-      try {
-        this.$store.commit('removeUser')
-        localStorage.removeItem('access_token');
-        this.$router.push('/in')
-      } finally {
-        ;
-      }
+      alert(error)
     })
 }
