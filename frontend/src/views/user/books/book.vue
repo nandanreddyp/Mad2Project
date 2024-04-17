@@ -26,15 +26,17 @@
                         <router-link v-for="author in authors" :to="{name:'user-author',params:{id:author.id}}">{{ author.name }}</router-link>
                     </div>
                     <div class="book-options">
-                        <button @click="toggleEditBook" :book_id="book_id" class="blue">Edit</button>
-                        <editBook v-if="edit_book" :toggleEditBook="toggleEditBook" :LoadBook="LoadBook" :updatedToast="updatedToast"/>
-                        <button>Add authors</button>
-                        <button>Add to sections</button>
-                        <button class="blue" @click="openBook(book.pdf_path)">View book</button>
-                        <button @click="toggleAddRequest">Request</button>
-                        <button @click="toggleEditRequest">Edit Request</button>
-                        <addRequest v-if="make_request" :toggleAddRequest="toggleAddRequest"/>
-                        <editRequest v-if="edit_request" :toggleEditRequest="toggleEditRequest"/>
+                        <div v-if="user.role==='librarian'">
+                            <button @click="toggleEditBook" :book_id="book_id" class="blue">Edit</button>
+                            <editBook v-if="edit_book" :toggleEditBook="toggleEditBook" :LoadBook="LoadBook" :updatedToast="updatedToast"/>
+                        </div>
+                        <div v-else>
+                            <button  class="blue" @click="openBook(book.pdf_path)">View book</button>
+                            <button  @click="toggleAddRequest">Request</button>
+                            <button @click="toggleEditRequest">Edit Request</button>
+                            <addRequest v-if="make_request" :toggleAddRequest="toggleAddRequest"/>
+                            <editRequest v-if="edit_request" :toggleEditRequest="toggleEditRequest"/>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -64,6 +66,7 @@ import editRequest from '@/components/requests/editRequest.vue';
 
 export default{
     data(){return{
+        user: this.$store.state.user,
         loading: true,
         book_id: this.$route.params.id,
         book: null,
@@ -77,6 +80,9 @@ export default{
         add_sections: false,
         make_request: false,
         edit_request: false,
+        // issue reqeust info
+        issued: false,
+        requested: false,
     }},
     methods: {
         formatISODate(isoDate) {
@@ -107,6 +113,12 @@ export default{
                     this.loading = false
                 })
             }, 2000)
+            axiosClient.get(`/api/issues/books/${this.book_id}`)
+            .then(resp => {
+                console.log(resp.data)
+                this.issued = resp.data.issued
+                this.requested = resp.data.requested
+            })
         },
         updatedToast() {
             toast.success('Updated book',{autoClose: 4000,})

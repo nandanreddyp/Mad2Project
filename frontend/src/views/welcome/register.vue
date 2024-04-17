@@ -36,7 +36,7 @@ import { register } from '@/services/auth'
 export default {
     data() {
         return {
-            formdata: {email: this.$store.state.user.email, f_name:"User", l_name:"", password:"12345678", password1:"12345678", dob:"2004-04-09", img_file:"" },
+            formdata: {email: this.$store.state.user.email, f_name:"", l_name:"", password:"", password1:"", dob:"", img_file:"" },
             response: ''
         }
     },

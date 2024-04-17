@@ -40,6 +40,11 @@ export default [
                 component: () => import("@/views/user/sections/section.vue")
             },
             {
+                path: 'authors',
+                name: 'user-authors',
+                component: () => import("@/views/librarian/authors/authors.vue")
+            },
+            {
                 path: 'author/:id',
                 name: 'user-author',
                 component: () => import("@/views/librarian/authors/author.vue")

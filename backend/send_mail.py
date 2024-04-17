@@ -34,8 +34,8 @@ def welcome_mail(email,name):
     send_email(email,'Welcome to E-Libri',template)
     return 200
 
-def book_issued_mail(email,name,book_name):
-    template = render_template('book_issued.html', name = name, book_name = book_name)
+def book_issued_mail(email,name,book_name,book_id):
+    template = render_template('book_issued.html', name = name, book_name = book_name, book_id = book_id)
     send_email(email,'Your Request for a Book has been Accepted',template)
     return 200
 

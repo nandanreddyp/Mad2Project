@@ -136,9 +136,7 @@ class Request(db.Model):
     status = db.Column(db.String, default='pending') #['pending',['denied','issued',],]
     created_datetime = db.Column(db.DateTime, default=datetime.now)
     end_datetime = db.Column(db.DateTime, nullable=False)
-    read = db.Column(db.Boolean,default=True)
 
-    __table_args__ = (UniqueConstraint('user_id', 'book_id'),)
     def to_dict(self):
         return {
             'id': self.id,
@@ -146,8 +144,7 @@ class Request(db.Model):
             'book_id': self.book_id,
             'status': self.status,
             'created_datetime': self.created_datetime.isoformat(),
-            'end_datetime': self.end_datetime.isoformat(),
-            'read': self.read,
+            'end_datetime': self.end_datetime.isoformat()
         }
     def update_status(self,status):
         if status == 0:
@@ -163,13 +160,14 @@ class Issue(db.Model):
     book_id = db.Column(db.Integer, db.ForeignKey('books.id'), nullable=False)
     created_datetime = db.Column(db.DateTime, default=datetime.now)
     revoke_datetime = db.Column(db.DateTime, nullable=False)
+    status = db.Column(db.String, default='pending') #['active','expired']
 
-    __table_args__ = (UniqueConstraint('user_id', 'book_id'),)
     def to_dict(self):
         return {
             'id': self.id,
             'user_id': self.user_id,
             'book_id': self.book_id,
+            'status': self.status,
             'created_datetime': self.created_datetime.isoformat(),
             'revoke_datetime': self.revoke_datetime.isoformat(),
         }

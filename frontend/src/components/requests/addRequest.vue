@@ -2,21 +2,21 @@
     <div class="popup-bg">
         <div class="popup">
             <h1 class="popup-header">{{ book_data.name }}</h1>
-            <div class="body">
+            <form ref="myForm" class="body">
                 <div class="book-img">
                     <img :src="book_data.img_path" alt="">
                 </div>
                 <div class="form-group">
                     <label for="return-date">Return Date:</label>
-                    <input type="datetime-local" class="datetime-local" id="return-date" min="" name="return-date" required>
+                    <input ref="date" type="datetime-local" class="datetime-local" id="return-date" min="" name="return-date" required>
                 </div>
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" id="terms-checkbox" required>
                     <label for="terms-checkbox" class="form-check-label">I agree to the terms and conditions</label>
                 </div>
-            </div>
+            </form>
             <div class="popup-options">
-                <button class="ok" @click="submitForm">Submit</button>
+                <button class="ok" @click="checkForm">Submit</button>
                 <button class="cancel" @click="toggleAddRequest">Cancel</button>
             </div>
         </div>
@@ -34,19 +34,22 @@ export default {
         },
         min_date : new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().slice(0, 16),
         formdata: {
-            book_id:'1',
-            return_date:''
+            book_id: this.$route.params.id,
+            return_date: '',
         }
     }},
     methods:{
-        requestbook(){
-            axiosClient.post(`/api/requests`)
-            .then(resp=>{
-
-            })
+        checkForm() {
+            if (this.$refs.myForm.reportValidity()) {
+                this.formdata.return_date = this.$refs.date.value
+                this.submitForm()
+            }
         },
         submitForm(){
-            
+            axiosClient.post('/api/requests',this.formdata)
+            .then(resp => {
+                console.log(resp)
+            })
         }
     },
     props: {
@@ -104,7 +107,7 @@ export default {
 }
 
 /* body */
-div.body {
+.body {
     flex: 1; overflow-y: auto;
     display: flex; flex-direction: column;
     align-items: center;

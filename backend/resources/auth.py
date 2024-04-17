@@ -4,6 +4,7 @@ from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identi
 from datetime import datetime, timedelta
 import random
 
+from send_mail import welcome_mail
 from resources import api, BLOCKLIST
 from database import db, User        
 
@@ -58,6 +59,7 @@ class Register(Resource):
             img_path = profileImage().save(img_file)
             user.img_path = img_path
         db.session.add(user); db.session.commit()
+        welcome_mail(user.email, user.f_name+' '+user.l_name) #send welcome mail
         return {'exists':False}, 200
 api.add_resource(Register,'/api/auth/register')
 

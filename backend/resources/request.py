@@ -9,7 +9,7 @@ from .rbac import access_for
 
 
 
-class UserRequest(Resource): #✅
+class UserRequest(Resource):
     @jwt_required()
     def __init__(self):
         self.user = User.query.filter_by(email=get_jwt_identity()).first()
@@ -24,9 +24,9 @@ class UserRequest(Resource): #✅
         results = {'msg':'fetched requests','pending_requests':pending_requests,'processed_requests':processed_requests}
         return results, 200
     def post(self, request_id=None):
+        print(request.json)
         if request_id: return {'msg':"Can't post with id"}, 400
-        if not request.is_json: return {'msg':'Missing JSON in request'}, 400
-        data = request.json
+        data = request.form
         if not data: return {'msg':'No data provided'}, 400
         try:
             book_id = data.get('book_id','').strip() or None
@@ -82,21 +82,14 @@ class LibrarianRequest(Resource): #✅
     def get(self, request_id=None):
         if request_id: return {'msg':'request id is not needed'}, 400
         # BUILDING QUERY
-        result = Request.query.filter_by(Request.status=='pending')
-        sort = request.args.get('sort')
-        if sort:
-            if sort == 'newest':
-                result = result.order_by(Request.created_datetime.desc())
-            if sort == 'oldest':
-                result = result.order_by(Request.created_datetime.asc())
-        if not sort:
-            result = result.order_by(Request.created_datetime.desc())
-        msg = 'Successfully fetced'
-        page = request.args.get('page',1,type=int); per_page = request.args.get('per_page',3,type=int)
-        pagination = result.paginate(page=page, per_page=per_page)
-        page_data = {'current_page': pagination.page,'next_page': pagination.next_num,'has_next': pagination.has_next,'has_prev': pagination.has_prev,'per_page': pagination.per_page,'current_page_count': len(pagination.items),'total_items':pagination.total}
-        requests = [request.to_dict() for requests in pagination.items]
-        results = {'msg':msg,'page_data':page_data,'requests':requests}
+        result = Request.query.filter_by(status='pending').all()
+        requests = [request.to_dict() for request in result]
+        for request in requests:
+            user_name = User.query.get(request.user_id).f_name + ' ' + User.query.get(request.user_id).l_name
+            request['user_name'] = user_name
+            book_name = Book.query.get(request.book_id).name
+            request['book_name'] = book_name
+        results = {'requests':requests}
         return results, 200
     @access_for(['librarian'])
     def put(self, request_id=None):

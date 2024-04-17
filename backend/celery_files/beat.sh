@@ -1,0 +1,1 @@
+celery -A run.celery_app beat -l info

@@ -2,6 +2,7 @@ from flask import request
 from flask_restful import Resource
 from sqlalchemy import and_, exists, insert
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from datetime import datetime
 
 from resources import api
 from database import db, User, Book, Section, Author, Rating, Request, Issue, book_author_association, book_section_association
@@ -297,7 +298,7 @@ api.add_resource(BookAuthor,
 
 
 
-class BookRequest(Resource): #✅
+class BookRequest(Resource):
     @jwt_required()
     def __init__(self):
         self.user = User.query.filter_by(email = get_jwt_identity()).first()
@@ -312,7 +313,7 @@ api.add_resource(BookRequest,'/api/books/<int:book_id>/request')
 
 
 
-class BookIssue(Resource): #✅
+class BookIssue(Resource):
     @jwt_required()
     def __init__(self):
         self.user = User.query.filter_by(email = get_jwt_identity()).first()
